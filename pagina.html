@@ -4,80 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Projeto Integrador 2</title>
+    <link rel="stylesheet" href="login.css">
+    <script src="login.js" defer></script>
 </head>
 <body>
 
     <section>
-
         <h2>Login</h2>
         <form id="loginForm" novalidate>
             <div>
                 <label for="email">E-mail</label><br>
                 <input type="email" id="email" name="email" autocomplete="email" required placeholder="Digite seu e-mail">
-                <div id="emailError"></div>
             </div>
             <div>
                 <label for="password">Senha</label><br>
                 <input type="password" id="password" name="password" autocomplete="current-password" minlength="6" required placeholder="Digite sua senha">
-                <div id="passwordError"></div>
             </div>
             <div>
-                <button type="submit" id="loginBtn" disabled>Entrar</button>
+                <div id="globalError"></div>
+                <button type="submit" id="loginBtn">Entrar</button>
             </div>
         </form>
-
     </section>
 
-    <script>
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const emailError = document.getElementById('emailError');
-        const passwordError = document.getElementById('passwordError');
-        const loginBtn = document.getElementById('loginBtn');
-        const form = document.getElementById('loginForm');
-
-        function validateEmail(email) {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        }
-
-        function validate() {
-            let valid = true;
-
-            if (!emailInput.value.trim()) {
-                emailError.textContent = 'Preencha o campo de e-mail.';
-                valid = false;
-            } else if (!validateEmail(emailInput.value.trim())) {
-                emailError.textContent = 'Digite um e-mail válido.';
-                valid = false;
-            } else {
-                emailError.textContent = '';
-            }
-
-            if (!passwordInput.value) {
-                passwordError.textContent = 'Preencha o campo de senha.';
-                valid = false;
-            } else if (passwordInput.value.length < 6) {
-                passwordError.textContent = 'A senha deve ter pelo menos 6 caracteres.';
-                valid = false;
-            } else {
-                passwordError.textContent = '';
-            }
-
-            loginBtn.disabled = !valid;
-            return valid;
-        }
-
-        emailInput.addEventListener('input', validate);
-        passwordInput.addEventListener('input', validate);
-
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            if (validate()) {
-                alert('Login realizado com sucesso!');
-            }
-        });
-
-        validate();
-    </script>
 </body>
 </html>
