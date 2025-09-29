@@ -50,7 +50,8 @@ function validarConfirmacaoSenha() {
     if (senha === confirmaSenha) {
         msgConfirmacao.textContent = 'As senhas conferem!';
         msgConfirmacao.className = 'valido';
-    } else {
+    } 
+    else {
         msgConfirmacao.textContent = 'As senhas não conferem!';
         msgConfirmacao.className = 'invalido';
     }
