@@ -3,6 +3,7 @@ const passwordInput = document.getElementById('password');
 const loginBtn = document.getElementById('loginBtn');
 const form = document.getElementById('loginForm');
 const globalError = document.getElementById('globalError');
+const globalCheck = document.getElementById('globalCheck');
 
 
 form.addEventListener('submit', function(event) {
@@ -27,7 +28,7 @@ form.addEventListener('submit', function(event) {
     }
 
     globalError.textContent = "";
-    alert("Login realizado com sucesso!");
+    globalCheck.textContent = "Login realizado com sucesso!";
     emailInput.value = "";
     passwordInput.value = "";
 });
