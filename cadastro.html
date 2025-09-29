@@ -16,7 +16,7 @@
 
 </head>
 <body> 
-    
+
 
  <div>
     <div class="container">
@@ -40,13 +40,20 @@
 
             <div class="form-group">
                 <label for="senha">Senha:</label>
-                <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
-            </div>
+                
+                <div class="input-wrapper">
+                  <input type="password" id="senha" placeholder="Digite sua senha">
+                  <small class="hint">
+                      Min. 6 caracteres, com maiuscula, minuscula, número e símbolo
+                  </small>
+                </div>
+                </div>
 
         
             <div class="form-group">
                 <label for="confirma-senha">Confirme sua Senha:</label>
                 <input type="password" id="confirma-senha" name="confirma-senha" placeholder="Confirme sua senha" required>
+                <small id = "confirmMsg" class = "msg"></small>
             </div>
             <div id="msg-confirmacao"></div>
     

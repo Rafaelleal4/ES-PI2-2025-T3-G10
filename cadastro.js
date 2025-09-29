@@ -3,9 +3,11 @@
 
 const telefoneInput = document.getElementById('telefone');
 
+// Adiciona um "ouvinte" que roda toda vez que o usuário digitar no input
 telefoneInput.addEventListener('input', function (e) {
-  
- 
+
+  // Pega o valor digitado e remove tudo que não for número (ex: letras, traços, espaços)
+  //replace = substituir espaço por texto
   let valor = e.target.value.replace(/\D/g, '');
 
   valor = valor.substring(0, 11);
@@ -25,23 +27,17 @@ telefoneInput.addEventListener('input', function (e) {
   e.target.value = valorFormatado;
 });
 
-
-
 //*validaçao de senha e comparação//
 
 const senhaInput = document.getElementById('senha');
 const confirmaSenhaInput = document.getElementById('confirma-senha');
 const msgConfirmacao = document.getElementById('msg-confirmacao');
 
-
-
+const regexSenhaForte = /^(?=.\d)(?=.[a-z])(?=.[A-Z])(?=.[!@#$%^&*]).{8,}$/;
 
 senhaInput.addEventListener('input', validarConfirmacaoSenha);
 
-
 confirmaSenhaInput.addEventListener('input', validarConfirmacaoSenha);
-
-
 
 function validarConfirmacaoSenha() {
     const senha = senhaInput.value;
@@ -51,7 +47,6 @@ function validarConfirmacaoSenha() {
         msgConfirmacao.textContent = '';
         return;
     }
-
     if (senha === confirmaSenha) {
         msgConfirmacao.textContent = 'As senhas conferem!';
         msgConfirmacao.className = 'valido';
