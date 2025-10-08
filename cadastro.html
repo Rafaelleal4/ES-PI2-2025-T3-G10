@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tela de Cadastro</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="cadastro.css">
+    
+
+</head>
+<body> 
+
+
+ <div>
+    <div class="container">
+     <form>
+            <h2>Cadastro</h2>
+
+            <div class="form-group">
+                <label for="nome">Nome Completo:</label>
+                <input type="text" id="nome" name="nome" placeholder="Digite seu nome aqui" required>
+            </div>
+
+            <div class="form-group">
+                <label for="telefone">Telefone:</label>
+                <input type="text" id="telefone" name="telefone" placeholder="(11) 91234-5678"  pattern="\(\d{2}\) \d{5}-\d{4}" required maxlength="15" inputmode="tel">
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-mail:</label>
+                <input type="email" id="email" name="email" placeholder="seuemail@exemplo.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="senha">Senha:</label>
+                
+                <div class="input-wrapper">
+                  <input type="password" id="senha" placeholder="Digite sua senha">
+                  <small class="hint">
+                      Min. 6 caracteres, com maiuscula, minuscula, número e símbolo.
+                  </small>
+                </div>
+                </div>
+
+            <div class="form-group">
+                <label for="confirma-senha">Confirme sua Senha:</label>
+                <input type="password" id="confirma-senha" name="confirma-senha" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$" title="A senha deve ter ao menos 8 caracteres, incluindo maiúscula, minúscula, número e símbolo." placeholder="Confirme sua senha" required minlength="6" >
+                <small id = "confirmMsg" class = "msg"></small>
+            </div>
+            <div id="msg-confirmacao"></div>
+    
+            <button type="submit" class="btn-principal">Cadastrar</button>
+            
+            </form> </div> <script src="cadastro.js"></script> 
+        
+            </form>
+        </div>
+    </body>
+</html>
