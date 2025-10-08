@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Projeto Integrador 2</title>
+    <link rel="stylesheet" href="login.css">
+    <script src="login.js" defer></script>
+</head>
+<body>
+
+    <section>
+        <h2>Login</h2>
+        <form id="loginForm" novalidate>
+            <div>
+                <label for="email">E-mail</label><br>
+                <input type="email" id="email" name="email" autocomplete="email" required placeholder="Digite seu e-mail">
+            </div>
+            <div>
+                <label for="password">Senha</label><br>
+                <input type="password" id="password" name="password" autocomplete="current-password" minlength="6" required placeholder="Digite sua senha">
+            </div>
+            <div>
+                <div id="globalError"></div>
+                <div id="globalCheck"></div>
+                <button type="submit" id="loginBtn">Entrar</button>
+            </div>
+        </form>
+    </section>
+
+</body>
+</html>
