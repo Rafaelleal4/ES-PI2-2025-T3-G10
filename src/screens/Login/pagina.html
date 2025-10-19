@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Projeto Integrador 2</title>
-    <link rel="stylesheet" href="login.css">
-    <script src="login.js" defer></script>
+    <link rel="stylesheet" href="/login/login.css">
+    <script src="/login/login.js" defer></script>
 </head>
 <body>
 
     <section>
         <h2>Login</h2>
-        <form id="loginForm" novalidate>
+    <form id="loginForm" method="POST" action="/login" novalidate>
             <div>
                 <label for="email">E-mail</label><br>
                 <input type="email" id="email" name="email" autocomplete="email" required placeholder="Digite seu e-mail">

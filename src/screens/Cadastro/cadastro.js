@@ -33,7 +33,8 @@ const senhaInput = document.getElementById('senha');
 const confirmaSenhaInput = document.getElementById('confirma-senha');
 const msgConfirmacao = document.getElementById('msg-confirmacao');
 
-const regexSenhaForte = /^(?=.\d)(?=.[a-z])(?=.[A-Z])(?=.[!@#$%^&*]).{8,}$/;
+// Correção da regex (lookaheads corretos)
+const regexSenhaForte = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/;
 
 senhaInput.addEventListener('input', validarConfirmacaoSenha);
 
@@ -55,4 +56,38 @@ function validarConfirmacaoSenha() {
         msgConfirmacao.textContent = 'As senhas não conferem!';
         msgConfirmacao.className = 'invalido';
     }
+}
+
+// Validação básica no cliente
+const formCadastro = document.querySelector('form');
+if (formCadastro) {
+  formCadastro.addEventListener('submit', function (e) {
+    const nome = document.getElementById('nome').value.trim();
+    const telefone = document.getElementById('telefone').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const senha = senhaInput.value;
+    if (!nome || !telefone || !email || !senha) {
+      mostrarMensagem('Preencha todos os campos.', false);
+      e.preventDefault();
+      return;
+    }
+    if (!regexSenhaForte.test(senha)) {
+      mostrarMensagem('A senha não atende aos requisitos mínimos.', false);
+      e.preventDefault();
+      return;
+    }
+    if (senha !== confirmaSenhaInput.value) {
+      mostrarMensagem('As senhas não conferem!', false);
+      e.preventDefault();
+      return;
+    }
+    // Permite submit normal para o backend
+  });
+}
+
+function mostrarMensagem(texto, ok) {
+  const el = document.getElementById('msg-confirmacao');
+  if (!el) return;
+  el.textContent = texto;
+  el.className = ok ? 'valido' : 'invalido';
 }

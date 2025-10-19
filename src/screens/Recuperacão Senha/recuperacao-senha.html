@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recuperação de Senha</title>
-    <link rel="stylesheet" href="recuperacao-senha.css">
+    <link rel="stylesheet" href="/recuperacao-senha/recuperacao-senha.css">
 </head>
 <body>
     <div class="recuperacao-container">
         <h2>Recuperação de Senha</h2>
-        <form id="recuperacaoForm">
+    <form id="recuperacaoForm" method="POST" action="/recuperacao-senha">
             <label for="email" class="form-label">E-mail cadastrado</label>
             <input type="email" class="form-control" id="email" name="email" required>
             <button type="submit" class="btn">Enviar</button>
@@ -17,6 +17,6 @@
         <div id="mensagem"></div>
     </div>
 
-    <script src="recuperacao-senha.js"></script>
+    <script src="/recuperacao-senha/recuperacao-senha.js"></script>
 </body>
 </html>

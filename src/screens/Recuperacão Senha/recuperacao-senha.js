@@ -4,19 +4,16 @@ function validarEmail(email) {
 }
 
 document.getElementById('recuperacaoForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const email = document.getElementById('email').value;
+    const email = document.getElementById('email').value.trim();
     const mensagem = document.getElementById('mensagem');
     mensagem.style.color = '';
+    mensagem.textContent = '';
 
     if (!validarEmail(email)) {
         mensagem.style.color = 'red';
-        mensagem.innerHTML = 'Por favor, insira um e-mail válido.';
+        mensagem.textContent = 'Por favor, insira um e-mail válido.';
+        e.preventDefault();
         return;
     }
-    // Simulação de envio de e-mail
-    setTimeout(() => {
-        mensagem.style.color = 'green';
-        mensagem.innerHTML = 'Se o e-mail estiver cadastrado, você receberá instruções para redefinir sua senha.';
-    }, 1000);
+    // Permite submit normal para o backend
 });
