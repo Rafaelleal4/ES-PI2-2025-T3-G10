@@ -124,3 +124,29 @@ body {
     flex-direction: column;
     display: flex;
 }
+
+
+.container-botoes {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;    /
+    width: 100%;           
+    margin-top: 10px;       
+}
+
+
+.btn-principal {
+    width: 100%; 
+}
+
+
+.link-voltar {
+    margin-top: 16px; 
+    color: #6b7280;
+    text-decoration: underline;
+    font-size: 14px;
+}
+
+.link-voltar:hover {
+    color: #374151;
+}
