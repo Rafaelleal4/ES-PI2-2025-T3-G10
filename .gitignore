@@ -1,2 +1,27 @@
+# Dependencies
 /node_modules
+
+# Build output
 /lib
+
+# Environment variables (NUNCA COMMITAR!)
+.env
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+temp/

@@ -5,17 +5,44 @@ const form = document.getElementById('loginForm');
 const globalError = document.getElementById('globalError');
 const globalCheck = document.getElementById('globalCheck');
 
-form.addEventListener('submit', function(event) {
+form.addEventListener('submit', async function(event) {
+    event.preventDefault();
+
     // Validação básica no cliente
     const email = emailInput.value.trim();
     const password = passwordInput.value;
     if (!email || email.indexOf('@') === -1 || email.indexOf('.') === -1 || !password) {
         globalCheck.textContent = '';
         globalError.textContent = 'E-mail ou senha incorretos ou inválidos.';
-        event.preventDefault();
         return;
     }
+
     globalError.textContent = '';
-    globalCheck.textContent = '';
-    // Permite submit normal para o backend
+    globalCheck.textContent = 'Entrando...';
+
+    try {
+        const resp = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await resp.json().catch(() => ({ ok: false, message: 'Erro inesperado.' }));
+
+        if (!resp.ok || !data.ok) {
+            globalCheck.textContent = '';
+            globalError.textContent = data?.message || 'Falha no login.';
+            return;
+        }
+
+        // Sucesso: redireciona para a Home
+        globalCheck.textContent = 'Login realizado com sucesso! Redirecionando...';
+        setTimeout(() => {
+            window.location.href = '/home';
+        }, 600);
+
+    } catch (err) {
+        globalCheck.textContent = '';
+        globalError.textContent = 'Não foi possível conectar ao servidor.';
+    }
 });

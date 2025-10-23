@@ -5,18 +5,21 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx tsc-watch --onSuccess \"node ./lib/index.js\""
+    "start": "tsc-watch --onSuccess \"node ./lib/index.js\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^5.1.0"
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "oracledb": "^6.10.0"
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.10",
     "@types/express": "^5.0.3",
     "@types/node": "^24.7.0",
+    "@types/oracledb": "^6.10.0",
     "tsc-watch": "^7.2.0",
     "typescript": "^5.9.3"
   }
