@@ -13,12 +13,14 @@
   "dependencies": {
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "nodemailer": "^7.0.10",
     "oracledb": "^6.10.0"
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.10",
     "@types/express": "^5.0.3",
     "@types/node": "^24.7.0",
+    "@types/nodemailer": "^7.0.3",
     "@types/oracledb": "^6.10.0",
     "tsc-watch": "^7.2.0",
     "typescript": "^5.9.3"

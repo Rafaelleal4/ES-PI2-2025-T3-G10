@@ -99,7 +99,7 @@ Ao iniciar com sucesso, você verá:
 ```
 Conectando ao Oracle...
 ✅ Conectado com sucesso!
-Servidor rodando em http://localhost:3000
+Servidor rodando em http://localhost:5000
 ```
 
 ---
@@ -108,9 +108,10 @@ Servidor rodando em http://localhost:3000
 
 ### Páginas HTML
 
-- **Login:** http://localhost:3000/login
-- **Cadastro:** http://localhost:3000/cadastro
-- **Recuperação de senha:** http://localhost:3000/recuperacao-senha
+- **Login:** http://localhost:5000/login
+- **Cadastro:** http://localhost:5000/cadastro
+- **Recuperação de senha:** http://localhost:5000/recuperacao-senha
+- **Redefinir senha (via link do e-mail):** http://localhost:5000/redefinir-senha?token=SEU_TOKEN
 
 ### API REST - Autenticação
 
@@ -166,7 +167,7 @@ Autentica um professor no sistema.
 ```
 
 #### POST `/api/auth/recuperacao-senha`
-Inicia processo de recuperação de senha (stub - envio de email não implementado).
+Inicia o processo de recuperação de senha: gera token (1h de validade), salva no banco e envia e-mail com o link de redefinição.
 
 **Body:**
 ```json
@@ -180,6 +181,25 @@ Inicia processo de recuperação de senha (stub - envio de email não implementa
 {
   "ok": true,
   "message": "Se o email estiver cadastrado, você receberá um link de recuperação"
+}
+```
+
+#### POST `/api/auth/redefinir-senha`
+Redefine a senha a partir de um token válido e não utilizado.
+
+**Body:**
+```json
+{
+  "token": "uuid-do-email",
+  "novaSenha": "senha123"
+}
+```
+
+**Resposta (200):**
+```json
+{
+  "ok": true,
+  "message": "Senha redefinida com sucesso! Você já pode fazer login."
 }
 ```
 
@@ -204,15 +224,15 @@ Verifica status da conexão com banco Oracle.
 
 ```powershell
 # Testar status da conexão
-curl http://localhost:3000/api/auth/status
+curl http://localhost:5000/api/auth/status
 
 # Cadastrar novo professor
-curl -X POST http://localhost:3000/api/auth/cadastro `
+curl -X POST http://localhost:5000/api/auth/cadastro `
   -H "Content-Type: application/json" `
   -d '{\"nome\":\"Prof. Teste\",\"email\":\"teste@puc.br\",\"senha\":\"senha123\"}'
 
 # Login
-curl -X POST http://localhost:3000/api/auth/login `
+curl -X POST http://localhost:5000/api/auth/login `
   -H "Content-Type: application/json" `
   -d '{\"email\":\"joao.silva@puc.br\",\"password\":\"senha123\"}'
 ```
@@ -239,11 +259,12 @@ ES-PI2-2025-T3-G10/
 │   │   │   └── connection.ts   # Pool de conexões
 │   │   └── routes/
 │   │       ├── auth.ts         # Rotas de autenticação
-│   │       └── pages.ts        # Rotas de páginas HTML
+│   │       └── pages/          # Rotas de páginas HTML (agregador index.ts)
 │   ├── screens/                # Telas HTML/CSS/JS
 │   │   ├── Login/
 │   │   ├── Cadastro/
-│   │   └── Recuperacão Senha/
+│   │   ├── Recuperacão Senha/
+│   │   └── Redefinir Senha/
 │   └── index.ts                # Ponto de entrada
 ├── .env                        # Variáveis de ambiente (não commitar!)
 ├── .env.example                # Exemplo de configuração

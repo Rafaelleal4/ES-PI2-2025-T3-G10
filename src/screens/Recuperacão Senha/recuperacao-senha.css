@@ -39,8 +39,32 @@ body {
 .btn:hover {
     background-color: #0056b3;
 }
+
+.btn:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+}
+
 #mensagem {
-    margin-top: 16px;
+    margin: 16px 0;
+    padding: 10px;
+    border-radius: 4px;
     text-align: center;
-    color: #333;
+    font-weight: bold;
+    min-height: 20px;
+}
+
+.link-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.link-voltar {
+    color: #3b82f6;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.link-voltar:hover {
+    text-decoration: underline;
 }

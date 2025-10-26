@@ -9,12 +9,15 @@
 <body>
     <div class="recuperacao-container">
         <h2>Recuperação de Senha</h2>
-    <form id="recuperacaoForm" method="POST" action="/recuperacao-senha">
+        <form id="recuperacaoForm">
             <label for="email" class="form-label">E-mail cadastrado</label>
             <input type="email" class="form-control" id="email" name="email" required>
+            <div id="mensagem"></div>
             <button type="submit" class="btn">Enviar</button>
         </form>
-        <div id="mensagem"></div>
+        <div class="link-container">
+            <a href="/login" class="link-voltar">Voltar ao Login</a>
+        </div>
     </div>
 
     <script src="/recuperacao-senha/recuperacao-senha.js"></script>
