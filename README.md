@@ -56,7 +56,7 @@ Depois disso, `npm install` funcionará normalmente.
    ORACLE_HOST=172.16.12.14
    ORACLE_PORT=1521
    ORACLE_SID=XE
-   PORT=3000
+  PORT=5000
    ```
 
 **⚠️ IMPORTANTE:** Nunca faça commit do arquivo `.env` no Git!
