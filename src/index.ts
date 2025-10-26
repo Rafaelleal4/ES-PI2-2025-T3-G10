@@ -1,6 +1,6 @@
 import express from 'express';
 import path from 'path';
-import { registerPageRoutes } from './backend/routes/pages';
+import { registerPageRoutes } from './backend/routes/pages/index';
 import { registerApiRoutes } from './backend/routes/api';
 import { initializeDatabase } from './backend/database/connection';
 
@@ -29,7 +29,7 @@ async function startServer() {
   registerApiRoutes(app);
 
     // Iniciar servidor
-    const PORT = process.env.PORT || 3000;
+    const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => {
       console.log(`Servidor rodando em http://localhost:${PORT}`);
     });

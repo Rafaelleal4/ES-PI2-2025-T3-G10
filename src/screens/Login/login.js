@@ -38,7 +38,8 @@ form.addEventListener('submit', async function(event) {
         // Sucesso: redireciona para a Home
         globalCheck.textContent = 'Login realizado com sucesso! Redirecionando...';
         setTimeout(() => {
-            window.location.href = '/home';
+            // Redireciona para o novo Dashboard
+            window.location.assign('/dashboard/');
         }, 600);
 
     } catch (err) {
