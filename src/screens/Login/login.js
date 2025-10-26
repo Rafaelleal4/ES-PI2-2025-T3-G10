@@ -35,6 +35,13 @@ form.addEventListener('submit', async function(event) {
             return;
         }
 
+        // Salvar dados do usuário no localStorage
+        if (data.data && data.data.id) {
+            localStorage.setItem('usuarioId', data.data.id);
+            localStorage.setItem('usuarioNome', data.data.nome);
+            localStorage.setItem('usuarioEmail', data.data.email);
+        }
+
         // Sucesso: redireciona para a Home
         globalCheck.textContent = 'Login realizado com sucesso! Redirecionando...';
         setTimeout(() => {

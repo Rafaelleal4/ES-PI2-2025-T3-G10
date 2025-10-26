@@ -3,24 +3,97 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Instituições</title>
+  <title>Instituições - NotaDez</title>
   <link rel="stylesheet" href="/instituicoes/instituicoes.css" />
 </head>
 <body>
   <header class="topbar">
-    <h1>Instituições</h1>
+    <h1>🏛️ Instituições</h1>
     <nav>
-      <a href="/dashboard">Dashboard</a>
-      <a href="/login">Sair</a>
+      <a href="/dashboard">📊 Dashboard</a>
+      <a href="/login" id="btnSair">🚪 Sair</a>
     </nav>
   </header>
+
   <main class="container">
+    <!-- Mensagens de sucesso/erro -->
+    <div id="mensagem" class="mensagem oculto"></div>
+
+    <!-- Formulário de Criar/Editar -->
     <section class="card">
-      <h2>Gerenciar Instituições</h2>
-      <p>Página em construção. Em breve você poderá cadastrar e gerenciar suas instituições.</p>
-      <a href="/dashboard" class="btn">Voltar ao Dashboard</a>
+      <h2 id="tituloForm">➕ Nova Instituição</h2>
+      <form id="formInstituicao">
+        <input type="hidden" id="instituicaoId" />
+        
+        <div class="form-group">
+          <label for="nomeInstituicao">Nome da Instituição <span class="obrigatorio">*</span></label>
+          <input 
+            type="text" 
+            id="nomeInstituicao" 
+            placeholder="Ex: PUC-Campinas" 
+            required 
+            maxlength="255"
+          />
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="btnSalvar">
+            💾 Salvar
+          </button>
+          <button type="button" class="btn btn-secondary" id="btnCancelar">
+            ❌ Cancelar
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Lista de Instituições -->
+    <section class="card">
+      <div class="card-header">
+        <h2>📋 Minhas Instituições</h2>
+        <button class="btn btn-primary" id="btnNova">➕ Nova Instituição</button>
+      </div>
+
+      <div id="loading" class="loading oculto">
+        <p>⏳ Carregando...</p>
+      </div>
+
+      <div id="listaVazia" class="lista-vazia oculto">
+        <p>📭 Nenhuma instituição cadastrada ainda.</p>
+        <p>Clique em "Nova Instituição" para começar.</p>
+      </div>
+
+      <div id="containerLista">
+        <table id="tabelaInstituicoes" class="tabela oculto">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Criado em</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="corpoTabela">
+            <!-- Linhas serão inseridas via JavaScript -->
+          </tbody>
+        </table>
+      </div>
     </section>
   </main>
+
+  <!-- Modal de Confirmação de Exclusão -->
+  <div id="modalExcluir" class="modal oculto">
+    <div class="modal-content">
+      <h3>⚠️ Confirmar Exclusão</h3>
+      <p id="mensagemExclusao">Tem certeza que deseja excluir esta instituição?</p>
+      <p class="aviso">Esta ação é irreversível!</p>
+      <div class="modal-actions">
+        <button class="btn btn-danger" id="btnConfirmarExcluir">🗑️ Sim, Excluir</button>
+        <button class="btn btn-secondary" id="btnCancelarExcluir">❌ Cancelar</button>
+      </div>
+    </div>
+  </div>
+
   <script src="/instituicoes/instituicoes.js"></script>
 </body>
 </html>
