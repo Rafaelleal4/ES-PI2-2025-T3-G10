@@ -49,10 +49,11 @@ export async function enviarEmailRecuperacao(
             display: inline-block; 
             padding: 12px 30px; 
             background: #3b82f6; 
-            color: white; 
+            color: #ffffff !important; 
             text-decoration: none; 
             border-radius: 5px;
             margin: 20px 0;
+            font-weight: 600;
           }
           .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #666; }
         </style>

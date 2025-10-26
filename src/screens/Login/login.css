@@ -78,3 +78,23 @@ button {
   cursor: pointer;
 }
 
+.links-secundarios {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.links-secundarios a {
+  color: #3b82f6;
+  text-decoration: underline;
+  font-size: 0.9rem;
+}
+
+.links-secundarios a:hover {
+  color: #2563eb;
+}
+
+.links-secundarios .sep {
+  color: #6b7280;
+  margin: 0 8px;
+}
+

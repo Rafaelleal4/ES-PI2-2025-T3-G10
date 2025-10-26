@@ -7,7 +7,7 @@ import { Router, Request, Response } from 'express';
 import oracledb from 'oracledb';
 import crypto from 'crypto';
 import { executeQuery } from '../database/connection';
-import { enviarEmailRecuperacao } from '../services/email';
+import { enviarEmailRecuperacao, verificarConfiguracaoEmail } from '../services/email';
 
 const router = Router();
 
@@ -235,6 +235,15 @@ router.post('/redefinir-senha', async (req: Request, res: Response) => {
     console.error('Erro ao redefinir senha:', error);
     return res.status(500).json({ ok: false, message: 'Erro ao redefinir senha' });
   }
+});
+
+// GET /api/auth/email-test - verifica configuração do servidor de e-mail
+router.get('/email-test', async (_req: Request, res: Response) => {
+  const ok = await verificarConfiguracaoEmail();
+  return res.status(ok ? 200 : 500).json({
+    ok,
+    message: ok ? 'Servidor de e-mail OK' : 'Falha na configuração do servidor de e-mail'
+  });
 });
 
 // GET /api/auth/status
