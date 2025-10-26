@@ -5,7 +5,8 @@ export function registerHomeRoutes(app: Express, screensDir: string): void {
   // Normaliza variações de caixa
   app.get('/Home', (req, res) => res.redirect('/home'));
 
-  app.get('/home', (req, res) => {
+  // Atende /home e variações com barra final ou querystring
+  app.get(['/home', '/home/'], (req, res) => {
     res.sendFile(path.join(screensDir, 'Home', 'home.html'));
   });
 
