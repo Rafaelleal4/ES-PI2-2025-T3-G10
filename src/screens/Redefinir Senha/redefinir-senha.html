@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redefinir Senha</title>
+    <link rel="stylesheet" href="/redefinir-senha/redefinir-senha.css">
+</head>
+<body>
+    <div class="redefinir-container">
+        <h2>Redefinir Senha</h2>
+        <p class="descricao">Crie uma nova senha para sua conta</p>
+        
+        <form id="redefinirForm">
+            <div class="form-group">
+                <label for="novaSenha" class="form-label">Nova Senha</label>
+                <input type="password" class="form-control" id="novaSenha" name="novaSenha" required minlength="6">
+                <small class="hint">Mínimo 6 caracteres</small>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmaSenha" class="form-label">Confirmar Senha</label>
+                <input type="password" class="form-control" id="confirmaSenha" name="confirmaSenha" required minlength="6">
+            </div>
+
+            <div id="mensagem"></div>
+
+            <button type="submit" class="btn">Redefinir Senha</button>
+        </form>
+
+        <div class="link-container">
+            <a href="/login" class="link-voltar">Voltar ao Login</a>
+        </div>
+    </div>
+
+    <script src="/redefinir-senha/redefinir-senha.js"></script>
+</body>
+</html>
