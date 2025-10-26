@@ -20,11 +20,11 @@ COMMENT ON COLUMN tokens_recuperacao.usado IS '0 = não usado, 1 = já utilizado
 
 -- Índices para performance
 CREATE INDEX ix_tokens_usuario ON tokens_recuperacao(usuario_id);
-CREATE INDEX ix_tokens_token ON tokens_recuperacao(token);
 CREATE INDEX ix_tokens_expira ON tokens_recuperacao(expira_em);
 
--- Índice único para garantir que cada token é único
-CREATE UNIQUE INDEX uk_tokens_token ON tokens_recuperacao(token);
+-- Restrição única para garantir que cada token é único
+ALTER TABLE tokens_recuperacao
+  ADD CONSTRAINT uq_tokens_token UNIQUE (token);
 
 -- Trigger para limpeza automática de tokens expirados (executa a cada INSERT)
 -- Isso garante que tokens antigos sejam removidos automaticamente
