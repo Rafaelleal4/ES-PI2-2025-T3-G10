@@ -1,6 +1,6 @@
 import express from 'express';
 import path from 'path';
-import { registerPageRoutes } from './backend/routes/pages';
+import { registerPageRoutes } from './backend/routes/pages/index';
 import { registerApiRoutes } from './backend/routes/api';
 import { initializeDatabase } from './backend/database/connection';
 
