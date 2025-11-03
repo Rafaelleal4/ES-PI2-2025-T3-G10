@@ -1,5 +1,5 @@
 import { Express } from 'express';
-import authRoutes from '../auth';
+import authRoutes from './auth';
 import instituicoesRoutes from './instituicoes';
 import cursosRoutes from './cursos';
 import disciplinasRoutes from './disciplinas';
