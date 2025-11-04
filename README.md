@@ -218,31 +218,6 @@ Verifica status da conexão com banco Oracle.
 
 ---
 
-## 🧪 Testando as APIs
-
-### Teste com curl (PowerShell)
-
-```powershell
-# Testar status da conexão
-curl http://localhost:5000/api/auth/status
-
-# Cadastrar novo professor
-curl -X POST http://localhost:5000/api/auth/cadastro `
-  -H "Content-Type: application/json" `
-  -d '{\"nome\":\"Prof. Teste\",\"email\":\"teste@puc.br\",\"senha\":\"senha123\"}'
-
-# Login
-curl -X POST http://localhost:5000/api/auth/login `
-  -H "Content-Type: application/json" `
-  -d '{\"email\":\"joao.silva@puc.br\",\"password\":\"senha123\"}'
-```
-
-### Teste com navegador (Postman/Insomnia)
-
-Importe as requisições ou use o navegador para testar os endpoints.
-
----
-
 ## � Estrutura do Projeto
 
 ```
