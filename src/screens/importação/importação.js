@@ -1,4 +1,5 @@
 const express = require('express');
+// O 'multer' é um pacote (middleware) para Node.js que sabe lidar com o upload de arquivos (formulários multipart/form-data).
 const multer = require('multer');
 
 const router = express.Router();
