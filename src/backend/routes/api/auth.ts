@@ -1,6 +1,6 @@
 /**
  * Rotas de Autenticação
- * Autor: Equipe G10
+ * Autor: Rafael Leal
  */
 
 import { Router, Request, Response } from 'express';

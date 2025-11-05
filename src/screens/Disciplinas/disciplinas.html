@@ -1,26 +1,119 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Disciplinas</title>
-  <link rel="stylesheet" href="/disciplinas/disciplinas.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Disciplinas - Sistema de Notas</title>
+    <link rel="stylesheet" href="/disciplinas/disciplinas.css">
 </head>
 <body>
-  <header class="topbar">
-    <h1>Disciplinas</h1>
-    <nav>
-      <a href="/dashboard">Dashboard</a>
-      <a href="/login">Sair</a>
-    </nav>
-  </header>
-  <main class="container">
-    <section class="card">
-      <h2>Gerenciar Disciplinas</h2>
-      <p>Página em construção. Em breve você poderá cadastrar e gerenciar suas disciplinas.</p>
-      <a href="/dashboard" class="btn">Voltar ao Dashboard</a>
-    </section>
-  </main>
-  <script src="/disciplinas/disciplinas.js"></script>
+    <div class="container">
+        <header>
+            <h1>Gerenciar Disciplinas</h1>
+            <div>
+                <button id="btnDashboard" class="btn-secondary">Dashboard</button>
+                <button id="btnSair" class="btn-secondary">Sair</button>
+            </div>
+        </header>
+
+        <div class="filtros">
+            <div class="form-group">
+                <label for="selectCurso">Curso:</label>
+                <select id="selectCurso" required>
+                    <option value="">Selecione um curso...</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="acoes">
+            <button id="btnNovaDisciplina" class="btn-primary" disabled>
+                <span>+</span> Nova Disciplina
+            </button>
+        </div>
+
+        <div class="tabela-container">
+            <table id="tabelaDisciplinas">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nome</th>
+                        <th>Sigla</th>
+                        <th>Período</th>
+                        <th>Curso</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="listaDisciplinas">
+                    <tr class="sem-dados">
+                        <td colspan="6">Selecione um curso para visualizar as disciplinas</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para criar/editar disciplina -->
+    <div id="modalDisciplina" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitulo">Nova Disciplina</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="formDisciplina">
+                <input type="hidden" id="disciplinaId">
+                <input type="hidden" id="disciplinaCursoId">
+                
+                <div class="form-group">
+                    <label for="inputCodigo">Código:</label>
+                    <input type="text" id="inputCodigo" placeholder="Ex: ENG001">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputNome">Nome da Disciplina:</label>
+                    <input type="text" id="inputNome" placeholder="Ex: Cálculo I" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputSigla">Sigla:</label>
+                    <input type="text" id="inputSigla" placeholder="Ex: CALC1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputPeriodo">Período:</label>
+                    <input type="number" id="inputPeriodo" placeholder="Ex: 1" min="1" max="20">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputCursoModal">Curso:</label>
+                    <input type="text" id="inputCursoModal" readonly>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btnCancelar">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de confirmação de exclusão -->
+    <div id="modalConfirmacao" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Confirmar Exclusão</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir a disciplina <strong id="disciplinaNomeExcluir"></strong>?</p>
+                <p class="aviso">Esta ação não poderá ser desfeita e removerá todas as turmas, componentes de nota e notas associadas.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" id="btnCancelarExclusao">Cancelar</button>
+                <button type="button" class="btn-danger" id="btnConfirmarExclusao">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/disciplinas/disciplinas.js"></script>
 </body>
 </html>

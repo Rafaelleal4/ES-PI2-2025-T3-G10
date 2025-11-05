@@ -1,6 +1,6 @@
 /**
  * Configurações do Banco de Dados Oracle
- * Autor: Equipe G10
+ * Autor: Rafael Leal
  */
 
 import dotenv from 'dotenv';

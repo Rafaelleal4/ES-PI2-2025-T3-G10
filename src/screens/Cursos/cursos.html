@@ -1,26 +1,101 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cursos</title>
-  <link rel="stylesheet" href="/cursos/cursos.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Cursos - Sistema de Notas</title>
+    <link rel="stylesheet" href="/cursos/cursos.css">
 </head>
 <body>
-  <header class="topbar">
-    <h1>Cursos</h1>
-    <nav>
-      <a href="/dashboard">Dashboard</a>
-      <a href="/login">Sair</a>
-    </nav>
-  </header>
-  <main class="container">
-    <section class="card">
-      <h2>Gerenciar Cursos</h2>
-      <p>Página em construção. Em breve você poderá cadastrar e gerenciar seus cursos.</p>
-      <a href="/dashboard" class="btn">Voltar ao Dashboard</a>
-    </section>
-  </main>
-  <script src="/cursos/cursos.js"></script>
+    <div class="container">
+        <header>
+            <h1>Gerenciar Cursos</h1>
+            <div>
+                <button id="btnDashboard" class="btn-secondary">Dashboard</button>
+                <button id="btnSair" class="btn-secondary">Sair</button>
+            </div>
+        </header>
+
+        <div class="filtros">
+            <div class="form-group">
+                <label for="selectInstituicao">Instituição:</label>
+                <select id="selectInstituicao" required>
+                    <option value="">Selecione uma instituição...</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="acoes">
+            <button id="btnNovoCurso" class="btn-primary" disabled>
+                <span>+</span> Novo Curso
+            </button>
+        </div>
+
+        <div class="tabela-container">
+            <table id="tabelaCursos">
+                <thead>
+                    <tr>
+                        <th>Nome do Curso</th>
+                        <th>Instituição</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="listaCursos">
+                    <tr class="sem-dados">
+                        <td colspan="3">Selecione uma instituição para visualizar os cursos</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para criar/editar curso -->
+    <div id="modalCurso" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitulo">Novo Curso</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="formCurso">
+                <input type="hidden" id="cursoId">
+                <input type="hidden" id="cursoInstituicaoId">
+                
+                <div class="form-group">
+                    <label for="inputNomeCurso">Nome do Curso:</label>
+                    <input type="text" id="inputNomeCurso" placeholder="Ex: Engenharia de Software" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputInstituicaoModal">Instituição:</label>
+                    <input type="text" id="inputInstituicaoModal" readonly>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btnCancelar">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de confirmação de exclusão -->
+    <div id="modalConfirmacao" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Confirmar Exclusão</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir o curso <strong id="cursoNomeExcluir"></strong>?</p>
+                <p class="aviso">Esta ação não poderá ser desfeita e removerá todas as disciplinas, turmas e notas associadas.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" id="btnCancelarExclusao">Cancelar</button>
+                <button type="button" class="btn-danger" id="btnConfirmarExclusao">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/cursos/cursos.js"></script>
 </body>
 </html>

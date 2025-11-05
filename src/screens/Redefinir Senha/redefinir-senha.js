@@ -1,3 +1,8 @@
+/**
+ * Lógica da Tela de Redefinir Senha
+ * Autor: Rafael Leal
+ */
+
 // Capturar token da URL
 const urlParams = new URLSearchParams(window.location.search);
 const token = urlParams.get('token');

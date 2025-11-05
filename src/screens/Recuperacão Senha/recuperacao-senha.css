@@ -1,70 +1,212 @@
-body {
-    background-color: #f8f9fa;
+﻿/**
+ * NotaDez - Sistema de Gerenciamento de Notas
+ * Tema: Profissional Acadêmico - Autenticação
+ * Autor: Rafael Leal
+ */
+
+:root {
+    --primary-color: #1e3a8a;
+    --primary-dark: #1e40af;
+    --primary-light: #3b82f6;
+    --accent-color: #f59e0b;
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+    --bg-secondary: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --border-color: #e2e8f0;
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --radius-xl: 1rem;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.recuperacao-container {
-    max-width: 400px;
-    margin: 60px auto;
-    padding: 30px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-.recuperacao-container h2 {
-    margin-bottom: 24px;
-    text-align: center;
-}
-.form-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-}
-.form-control {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-bottom: 16px;
+
+* {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
 }
-.btn {
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    color: var(--text-primary);
+}
+
+section {
+    background: var(--bg-secondary);
+    padding: 3rem 2.5rem;
+    border-radius: var(--radius-xl);
     width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: #fff;
+    max-width: 420px;
+    box-shadow: var(--shadow-xl);
+    animation: slideIn 0.5s ease-out;
+    position: relative;
+    overflow: hidden;
+}
+
+section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-light) 100%);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+section h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    position: relative;
+}
+
+section h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: var(--accent-color);
+    border-radius: 2px;
+}
+
+form {
+    margin-top: 2rem;
+}
+
+form label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+form input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    margin-bottom: 1.25rem;
+    border: 2px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    outline: none;
+    transition: var(--transition);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+form input:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+form input::placeholder {
+    color: #94a3b8;
+}
+
+#globalError {
+    color: var(--danger-color);
+    font-weight: 600;
+    text-align: center;
+    padding: 0.75rem;
+    background: #fee2e2;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+}
+
+#globalCheck {
+    color: var(--success-color);
+    font-weight: 600;
+    text-align: center;
+    padding: 0.75rem;
+    background: #d1fae5;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+}
+
+button {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
     border: none;
-    border-radius: 4px;
+    border-radius: 0.5rem;
     cursor: pointer;
-    font-size: 16px;
-}
-.btn:hover {
-    background-color: #0056b3;
-}
-
-.btn:disabled {
-    background-color: #9ca3af;
-    cursor: not-allowed;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: var(--transition);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-#mensagem {
-    margin: 16px 0;
-    padding: 10px;
-    border-radius: 4px;
+button:hover {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+.links-secundarios {
+    margin-top: 1.5rem;
     text-align: center;
-    font-weight: bold;
-    min-height: 20px;
+    font-size: 0.9rem;
 }
 
-.link-container {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.link-voltar {
-    color: #3b82f6;
+.links-secundarios a {
+    color: var(--primary-color);
     text-decoration: none;
-    font-size: 14px;
+    font-weight: 600;
+    transition: var(--transition);
 }
 
-.link-voltar:hover {
+.links-secundarios a:hover {
+    color: var(--primary-light);
     text-decoration: underline;
+}
+
+.links-secundarios .sep {
+    color: var(--text-secondary);
+    margin: 0 0.5rem;
+}
+
+@media (max-width: 480px) {
+    section {
+        padding: 2rem 1.5rem;
+    }
+    section h2 {
+        font-size: 1.5rem;
+    }
+    button {
+        padding: 0.875rem;
+        font-size: 0.9rem;
+    }
 }

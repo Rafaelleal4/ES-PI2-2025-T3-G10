@@ -1,6 +1,6 @@
 /**
  * Módulo de Conexão com Oracle
- * Autor: Equipe G10
+ * Autor: Rafael Leal
  */
 
 import oracledb from 'oracledb';

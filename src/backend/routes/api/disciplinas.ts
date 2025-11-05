@@ -1,3 +1,8 @@
+/**
+ * CRUD de Disciplinas
+ * Autor: Rafael Leal
+ */
+
 import { Router, Request, Response } from 'express';
 import { executeQuery } from '../../database/connection';
 
@@ -9,24 +14,31 @@ const router = Router();
  */
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { curso_id, codigo, nome, sigla, periodo } = req.body;
+    let { curso_id, codigo, nome, sigla, periodo } = req.body;
+
+    // Normalização de tipos/formatos
+    curso_id = Number(curso_id);
+    codigo = (codigo && String(codigo).trim()) || null;
+    nome = nome && String(nome).trim();
+    sigla = sigla && String(sigla).trim().toUpperCase();
+    periodo = (periodo === '' || periodo === undefined || periodo === null) ? null : Number(periodo);
 
     // Validações
-    if (!nome || !nome.trim()) {
+    if (!nome) {
       return res.status(400).json({
         sucesso: false,
         mensagem: 'O nome da disciplina é obrigatório'
       });
     }
 
-    if (!sigla || !sigla.trim()) {
+    if (!sigla) {
       return res.status(400).json({
         sucesso: false,
         mensagem: 'A sigla da disciplina é obrigatória'
       });
     }
 
-    if (!curso_id) {
+    if (!curso_id || isNaN(curso_id)) {
       return res.status(400).json({
         sucesso: false,
         mensagem: 'ID do curso é obrigatório'
@@ -49,7 +61,7 @@ router.post('/', async (req: Request, res: Response) => {
     // Verificar se já existe uma disciplina com a mesma sigla neste curso
     const siglaExiste = await executeQuery(
       'SELECT id FROM disciplinas WHERE curso_id = :curso_id AND sigla = :sigla',
-      [curso_id, sigla.trim().toUpperCase()]
+      [curso_id, sigla]
     );
 
     if (siglaExiste.rows && siglaExiste.rows.length > 0) {
@@ -65,10 +77,10 @@ router.post('/', async (req: Request, res: Response) => {
        VALUES (:curso_id, :codigo, :nome, :sigla, :periodo)`,
       {
         curso_id,
-        codigo: codigo ? codigo.trim() : null,
-        nome: nome.trim(),
-        sigla: sigla.trim().toUpperCase(),
-        periodo: periodo || null
+        codigo,
+        nome,
+        sigla,
+        periodo
       }
     );
 
@@ -82,20 +94,37 @@ router.post('/', async (req: Request, res: Response) => {
       [curso_id]
     );
 
+    const row: any = disciplinaCriada.rows?.[0];
+
     return res.status(201).json({
       sucesso: true,
       mensagem: 'Disciplina criada com sucesso',
-      dados: disciplinaCriada.rows?.[0]
+      dados: row ? {
+        id: row.ID,
+        curso_id: row.CURSO_ID,
+        codigo: row.CODIGO,
+        nome: row.NOME,
+        sigla: row.SIGLA,
+        periodo: row.PERIODO,
+        criado_em: row.CRIADO_EM
+      } : null
     });
 
   } catch (error: any) {
     console.error('Erro ao criar disciplina:', error);
     
     // Tratamento específico para erro de constraint única
-    if (error.message && error.message.includes('UK_DISCIPLINAS_CURSO_SIGLA')) {
+    if ((error.code === 'ORA-00001' || error.errorNum === 1) && String(error.message || '').toUpperCase().includes('UK_DISCIPLINAS_CURSO_SIGLA')) {
       return res.status(400).json({
         sucesso: false,
         mensagem: 'Já existe uma disciplina com esta sigla neste curso'
+      });
+    }
+    // Outros erros de validação comuns
+    if (error.code === 'ORA-00904') {
+      return res.status(400).json({
+        sucesso: false,
+        mensagem: 'Erro de coluna/identificador inválido ao criar disciplina'
       });
     }
     
@@ -110,27 +139,46 @@ router.post('/', async (req: Request, res: Response) => {
 /**
  * GET /api/disciplinas
  * Lista todas as disciplinas
- * Query params: ?curso_id=X (opcional)
+ * Query params: ?curso_id=X&usuario_id=X
  */
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const { curso_id } = req.query;
+    const curso_id = req.query.curso_id;
+    const usuario_id = req.query.usuario_id || req.body.usuario_id;
 
-    let query = 'SELECT id, curso_id, codigo, nome, sigla, periodo, criado_em FROM disciplinas';
-    let params: any[] = [];
+    let query = `
+      SELECT d.id, d.curso_id, d.codigo, d.nome, d.sigla, d.periodo, d.criado_em,
+             c.nome AS curso_nome
+      FROM disciplinas d
+      INNER JOIN cursos c ON d.curso_id = c.id
+      INNER JOIN instituicoes i ON c.instituicao_id = i.id
+      WHERE i.usuario_id = :usuario_id
+    `;
+    let params: any = { usuario_id: Number(usuario_id) };
 
     if (curso_id) {
-      query += ' WHERE curso_id = :curso_id';
-      params = [Number(curso_id)];
+      query += ' AND d.curso_id = :curso_id';
+      params.curso_id = Number(curso_id);
     }
 
-    query += ' ORDER BY criado_em DESC';
+    query += ' ORDER BY d.criado_em DESC';
 
     const resultado = await executeQuery(query, params);
 
+    const disciplinasMap = resultado.rows?.map((row: any) => ({
+      id: row.ID,
+      curso_id: row.CURSO_ID,
+      codigo: row.CODIGO,
+      nome: row.NOME,
+      sigla: row.SIGLA,
+      periodo: row.PERIODO,
+      criado_em: row.CRIADO_EM,
+      curso_nome: row.CURSO_NOME
+    })) || [];
+
     return res.status(200).json({
       sucesso: true,
-      dados: resultado.rows || []
+      dados: disciplinasMap
     });
 
   } catch (error: any) {
@@ -163,9 +211,18 @@ router.get('/:id', async (req: Request, res: Response) => {
       });
     }
 
+    const row: any = resultado.rows[0];
     return res.status(200).json({
       sucesso: true,
-      dados: resultado.rows[0]
+      dados: {
+        id: row.ID,
+        curso_id: row.CURSO_ID,
+        codigo: row.CODIGO,
+        nome: row.NOME,
+        sigla: row.SIGLA,
+        periodo: row.PERIODO,
+        criado_em: row.CRIADO_EM
+      }
     });
 
   } catch (error: any) {
@@ -250,10 +307,20 @@ router.put('/:id', async (req: Request, res: Response) => {
       [Number(id)]
     );
 
+    const row2: any = disciplinaAtualizada.rows?.[0];
+
     return res.status(200).json({
       sucesso: true,
       mensagem: 'Disciplina atualizada com sucesso',
-      dados: disciplinaAtualizada.rows?.[0]
+      dados: row2 ? {
+        id: row2.ID,
+        curso_id: row2.CURSO_ID,
+        codigo: row2.CODIGO,
+        nome: row2.NOME,
+        sigla: row2.SIGLA,
+        periodo: row2.PERIODO,
+        criado_em: row2.CRIADO_EM
+      } : null
     });
 
   } catch (error: any) {

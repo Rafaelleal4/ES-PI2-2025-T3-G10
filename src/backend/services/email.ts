@@ -1,6 +1,6 @@
 /**
  * Serviço de Envio de E-mails
- * Autor: Equipe G10
+ * Autor: Rafael Leal
  * Utiliza Nodemailer para envio de e-mails de recuperação de senha
  */
 

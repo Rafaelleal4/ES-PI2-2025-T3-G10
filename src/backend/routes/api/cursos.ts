@@ -1,3 +1,8 @@
+/**
+ * CRUD de Cursos
+ * Autor: Rafael Leal
+ */
+
 import { Router, Request, Response } from 'express';
 import { executeQuery } from '../../database/connection';
 
@@ -59,10 +64,17 @@ router.post('/', async (req: Request, res: Response) => {
       [instituicao_id]
     );
 
+    const curso = cursoCriado.rows?.[0];
+
     return res.status(201).json({
       sucesso: true,
       mensagem: 'Curso criado com sucesso',
-      dados: cursoCriado.rows?.[0]
+      dados: curso ? {
+        id: curso.ID,
+        instituicao_id: curso.INSTITUICAO_ID,
+        nome: curso.NOME,
+        criado_em: curso.CRIADO_EM
+      } : null
     });
 
   } catch (error: any) {
@@ -78,27 +90,49 @@ router.post('/', async (req: Request, res: Response) => {
 /**
  * GET /api/cursos
  * Lista todos os cursos
- * Query params: ?instituicao_id=X (opcional)
+ * Query params: ?instituicao_id=X&usuario_id=X
  */
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const { instituicao_id } = req.query;
+    const instituicao_id = req.query.instituicao_id;
+    const usuario_id = req.query.usuario_id || req.body.usuario_id;
 
-    let query = 'SELECT id, instituicao_id, nome, criado_em FROM cursos';
-    let params: any[] = [];
-
-    if (instituicao_id) {
-      query += ' WHERE instituicao_id = :instituicao_id';
-      params = [Number(instituicao_id)];
+    if (!usuario_id) {
+      return res.status(400).json({
+        sucesso: false,
+        mensagem: 'usuario_id é obrigatório'
+      });
     }
 
-    query += ' ORDER BY criado_em DESC';
+    let query = `
+      SELECT c.id, c.instituicao_id, c.nome, c.criado_em, i.nome AS instituicao_nome
+      FROM cursos c
+      INNER JOIN instituicoes i ON c.instituicao_id = i.id
+      WHERE i.usuario_id = :usuario_id
+    `;
+    let params: any = { usuario_id: Number(usuario_id) };
+
+    if (instituicao_id && instituicao_id !== 'undefined') {
+      query += ' AND c.instituicao_id = :instituicao_id';
+      params.instituicao_id = Number(instituicao_id);
+    }
+
+    query += ' ORDER BY c.criado_em DESC';
 
     const resultado = await executeQuery(query, params);
 
+    // Mapear campos UPPERCASE do Oracle para lowercase
+    const cursosMapeados = resultado.rows?.map((row: any) => ({
+      id: row.ID,
+      instituicao_id: row.INSTITUICAO_ID,
+      nome: row.NOME,
+      criado_em: row.CRIADO_EM,
+      instituicao_nome: row.INSTITUICAO_NOME
+    })) || [];
+
     return res.status(200).json({
       sucesso: true,
-      dados: resultado.rows || []
+      dados: cursosMapeados
     });
 
   } catch (error: any) {
@@ -131,9 +165,16 @@ router.get('/:id', async (req: Request, res: Response) => {
       });
     }
 
+    const curso = resultado.rows[0];
+
     return res.status(200).json({
       sucesso: true,
-      dados: resultado.rows[0]
+      dados: {
+        id: curso.ID,
+        instituicao_id: curso.INSTITUICAO_ID,
+        nome: curso.NOME,
+        criado_em: curso.CRIADO_EM
+      }
     });
 
   } catch (error: any) {

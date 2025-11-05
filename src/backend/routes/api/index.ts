@@ -3,6 +3,8 @@ import authRoutes from './auth';
 import instituicoesRoutes from './instituicoes';
 import cursosRoutes from './cursos';
 import disciplinasRoutes from './disciplinas';
+import turmasRoutes from './turmas';
+import alunosRoutes from './alunos';
 
 export function registerApiRoutes(app: Express): void {
   // Rotas de autenticação
@@ -17,7 +19,9 @@ export function registerApiRoutes(app: Express): void {
   // Rotas de disciplinas
   app.use('/api/disciplinas', disciplinasRoutes);
 
-  // Futuras rotas de API podem ser adicionadas aqui, ex:
-  // app.use('/api/turmas', turmasRoutes);
-  // app.use('/api/alunos', alunosRoutes);
+  // Rotas de turmas
+  app.use('/api/turmas', turmasRoutes);
+
+  // Rotas de alunos
+  app.use('/api/alunos', alunosRoutes);
 }

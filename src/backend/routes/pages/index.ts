@@ -24,8 +24,8 @@ export function registerPageRoutes(app: Express, screensDir: string): void {
   registerAlunosRoutes(app, screensDir);
   registerNotasRoutes(app, screensDir);
 
-  // Rota raiz
+  // Rota raiz - redireciona para dashboard
   app.get('/', (req, res) => {
-    res.redirect('/login');
+    res.redirect('/dashboard');
   });
 }

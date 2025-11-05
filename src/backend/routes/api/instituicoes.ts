@@ -1,3 +1,8 @@
+/**
+ * CRUD de Instituições
+ * Autor: Rafael Leal
+ */
+
 import { Router, Request, Response } from 'express';
 import { executeQuery } from '../../database/connection';
 
@@ -254,7 +259,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
       });
     }
 
-    // Verificar se há cursos vinculados
+    // Verificar se há cursos vinculados (apenas da instituição já validada como do usuário)
     const cursosVinculados = await executeQuery(
       'SELECT COUNT(*) as total FROM cursos WHERE instituicao_id = :id',
       [Number(id)]

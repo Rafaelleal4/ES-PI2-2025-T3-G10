@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc-watch --onSuccess \"node ./lib/index.js\""
+    "build": "node node_modules/typescript/bin/tsc -p tsconfig.json",
+    "start": "node node_modules/tsc-watch/index.js --onSuccess \"node ./lib/index.js\"",
+    "dev": "node node_modules/tsc-watch/index.js --onSuccess \"node ./lib/index.js\""
   },
   "keywords": [],
   "author": "",
