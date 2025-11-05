@@ -1,3 +1,8 @@
+/**
+ * Lógica da Tela de Instituições
+ * Autor: Rafael Leal
+ */
+
 // Estado da aplicação
 let usuarioId = null;
 let instituicaoParaExcluir = null;

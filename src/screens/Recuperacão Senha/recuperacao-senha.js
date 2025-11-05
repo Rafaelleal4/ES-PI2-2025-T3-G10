@@ -1,3 +1,8 @@
+/**
+ * Lógica da Tela de Recuperação de Senha
+ * Autor: Rafael Leal
+ */
+
 function validarEmail(email) {
     // Regex para validação de e-mail
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);

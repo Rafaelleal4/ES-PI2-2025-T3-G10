@@ -1,3 +1,8 @@
+/**
+ * CRUD de Instituições
+ * Autor: Rafael Leal
+ */
+
 import { Router, Request, Response } from 'express';
 import { executeQuery } from '../../database/connection';
 
