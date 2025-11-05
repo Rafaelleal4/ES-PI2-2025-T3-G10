@@ -1,26 +1,98 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Turmas</title>
-  <link rel="stylesheet" href="/turmas/turmas.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Turmas - Sistema de Notas</title>
+    <link rel="stylesheet" href="turmas.css">
 </head>
 <body>
-  <header class="topbar">
-    <h1>Turmas</h1>
-    <nav>
-      <a href="/dashboard">Dashboard</a>
-      <a href="/login">Sair</a>
-    </nav>
-  </header>
-  <main class="container">
-    <section class="card">
-      <h2>Gerenciar Turmas</h2>
-      <p>Página em construção. Em breve você poderá cadastrar e gerenciar suas turmas.</p>
-      <a href="/dashboard" class="btn">Voltar ao Dashboard</a>
-    </section>
-  </main>
-  <script src="/turmas/turmas.js"></script>
+    <div class="container">
+        <header>
+            <h1>Gerenciar Turmas</h1>
+            <button id="btnVoltar" class="btn-secondary">Voltar</button>
+        </header>
+
+        <div class="filtros">
+            <div class="form-group">
+                <label for="selectDisciplina">Disciplina:</label>
+                <select id="selectDisciplina" required>
+                    <option value="">Selecione uma disciplina...</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="acoes">
+            <button id="btnNovaTurma" class="btn-primary" disabled>
+                <span>+</span> Nova Turma
+            </button>
+        </div>
+
+        <div class="tabela-container">
+            <table id="tabelaTurmas">
+                <thead>
+                    <tr>
+                        <th>Nome da Turma</th>
+                        <th>Disciplina</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="listaTurmas">
+                    <tr class="sem-dados">
+                        <td colspan="3">Selecione uma disciplina para visualizar as turmas</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para criar/editar turma -->
+    <div id="modalTurma" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitulo">Nova Turma</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="formTurma">
+                <input type="hidden" id="turmaId">
+                <input type="hidden" id="turmaDisciplinaId">
+                
+                <div class="form-group">
+                    <label for="inputNomeTurma">Nome da Turma:</label>
+                    <input type="text" id="inputNomeTurma" placeholder="Ex: Turma A" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputDisciplinaModal">Disciplina:</label>
+                    <input type="text" id="inputDisciplinaModal" readonly>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btnCancelar">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de confirmação de exclusão -->
+    <div id="modalConfirmacao" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Confirmar Exclusão</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir a turma <strong id="turmaNomeExcluir"></strong>?</p>
+                <p class="aviso">Esta ação não poderá ser desfeita.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" id="btnCancelarExclusao">Cancelar</button>
+                <button type="button" class="btn-danger" id="btnConfirmarExclusao">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="turmas.js"></script>
 </body>
 </html>

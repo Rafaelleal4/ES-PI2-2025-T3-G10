@@ -1,26 +1,125 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Alunos</title>
-  <link rel="stylesheet" href="/alunos/alunos.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Alunos - Sistema de Notas</title>
+    <link rel="stylesheet" href="alunos.css">
 </head>
 <body>
-  <header class="topbar">
-    <h1>Alunos</h1>
-    <nav>
-      <a href="/dashboard">Dashboard</a>
-      <a href="/login">Sair</a>
-    </nav>
-  </header>
-  <main class="container">
-    <section class="card">
-      <h2>Gerenciar Alunos</h2>
-      <p>Página em construção. Em breve você poderá cadastrar e gerenciar seus alunos.</p>
-      <a href="/dashboard" class="btn">Voltar ao Dashboard</a>
-    </section>
-  </main>
-  <script src="/alunos/alunos.js"></script>
+    <div class="container">
+        <header>
+            <h1>Gerenciar Alunos</h1>
+            <button id="btnVoltar" class="btn-secondary">Voltar</button>
+        </header>
+
+        <div class="acoes">
+            <button id="btnNovoAluno" class="btn-primary">
+                <span>+</span> Novo Aluno
+            </button>
+        </div>
+
+        <div class="tabela-container">
+            <table id="tabelaAlunos">
+                <thead>
+                    <tr>
+                        <th>Identificador</th>
+                        <th>Nome</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="listaAlunos">
+                    <tr class="sem-dados">
+                        <td colspan="3">Carregando...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para criar/editar aluno -->
+    <div id="modalAluno" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitulo">Novo Aluno</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="formAluno">
+                <input type="hidden" id="alunoId">
+                
+                <div class="form-group">
+                    <label for="inputIdentificador">Identificador (Matrícula):</label>
+                    <input type="text" id="inputIdentificador" placeholder="Ex: 2024001" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputNome">Nome Completo:</label>
+                    <input type="text" id="inputNome" placeholder="Ex: João da Silva" required>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btnCancelar">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para vincular aluno a turma -->
+    <div id="modalVincular" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Vincular Aluno à Turma</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="formVincular">
+                <input type="hidden" id="alunoIdVincular">
+                
+                <div class="form-group">
+                    <label for="inputAlunoVincular">Aluno:</label>
+                    <input type="text" id="inputAlunoVincular" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="selectDisciplina">Disciplina:</label>
+                    <select id="selectDisciplina" required>
+                        <option value="">Selecione uma disciplina...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="selectTurma">Turma:</label>
+                    <select id="selectTurma" required disabled>
+                        <option value="">Selecione uma disciplina primeiro...</option>
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btnCancelarVincular">Cancelar</button>
+                    <button type="submit" class="btn-primary">Vincular</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de confirmação de exclusão -->
+    <div id="modalConfirmacao" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Confirmar Exclusão</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir o aluno <strong id="alunoNomeExcluir"></strong>?</p>
+                <p class="aviso">Esta ação não poderá ser desfeita e removerá todos os vínculos com turmas.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" id="btnCancelarExclusao">Cancelar</button>
+                <button type="button" class="btn-danger" id="btnConfirmarExclusao">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="alunos.js"></script>
 </body>
 </html>
