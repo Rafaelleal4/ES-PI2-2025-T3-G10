@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Importar Alunos</title>
+    <link rel="stylesheet" href="importacao.css">
+</head>
+<body>
+
+    <main class="container">
+        <h2>Importação de Alunos (CSV)</h2>
+        
+        <p>Selecione o arquivo CSV contendo a lista de alunos para importar para o sistema.</p>
+
+        <form id="uploadForm" enctype="multipart/form-data">
+            
+            <div class="input-wrapper">
+                <label for="csvFile">Selecione o arquivo CSV:</label>
+                <input type="file" id="csvFile" name="arquivo_alunos" accept=".csv" required>
+            </div>
+            
+            <button type="submit" class="btn-importar">Importar Alunos</button>
+        </form>
+
+        <div id="mensagem"></div>
+    </main>
+
+    <script src="importacao.js"></script>
+</body>
+</html>
