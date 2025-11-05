@@ -9,13 +9,22 @@ let disciplinaSelecionada = null;
 let turmaEditando = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+    const usuarioId = localStorage.getItem('usuarioId');
+    if (!usuarioId) { window.location.href = '/login'; return; }
     carregarDisciplinas();
     configurarEventos();
 });
 
 function configurarEventos() {
-    document.getElementById('btnVoltar').addEventListener('click', () => {
-        window.location.href = '../Disciplinas/disciplinas.html';
+    document.getElementById('btnDashboard').addEventListener('click', () => {
+        window.location.href = '/';
+    });
+
+    document.getElementById('btnSair').addEventListener('click', () => {
+        if (confirm('Deseja realmente sair?')) {
+            localStorage.removeItem('usuarioId');
+            window.location.href = '/login';
+        }
     });
 
     document.getElementById('selectDisciplina').addEventListener('change', (e) => {
@@ -54,7 +63,7 @@ function configurarEventos() {
 
 async function carregarDisciplinas() {
     try {
-        const usuarioId = 1;
+        const usuarioId = localStorage.getItem('usuarioId');
         const response = await fetch(`${API_URL}/disciplinas?usuario_id=${usuarioId}`);
         const data = await response.json();
 
@@ -76,15 +85,15 @@ function preencherSelectDisciplinas() {
 
     disciplinas.forEach(disciplina => {
         const option = document.createElement('option');
-        option.value = disciplina.id;
-        option.textContent = `${disciplina.nome} - ${disciplina.curso_nome}`;
+        option.value = (disciplina.id || disciplina.ID);
+        option.textContent = `${(disciplina.nome || disciplina.NOME || '-')}${(disciplina.curso_nome || disciplina.CURSO_NOME) ? ' - ' + (disciplina.curso_nome || disciplina.CURSO_NOME) : ''}`;
         select.appendChild(option);
     });
 }
 
 async function carregarTurmas(disciplinaId) {
     try {
-        const usuarioId = 1;
+        const usuarioId = localStorage.getItem('usuarioId');
         const response = await fetch(`${API_URL}/turmas?disciplina_id=${disciplinaId}&usuario_id=${usuarioId}`);
         const data = await response.json();
 
@@ -114,13 +123,13 @@ function renderizarTabela() {
 
     tbody.innerHTML = turmas.map(turma => `
         <tr>
-            <td>${turma.nome}</td>
-            <td>${turma.disciplina_nome}</td>
+            <td>${turma.nome || turma.NOME || '-'}</td>
+            <td>${turma.disciplina_nome || turma.DISCIPLINA_NOME || '-'}</td>
             <td class="acoes-tabela">
-                <button class="btn-icon btn-editar" onclick="editarTurma(${turma.id})">
+                <button class="btn-icon btn-editar" onclick="editarTurma(${turma.id || turma.ID})">
                     ✏️ Editar
                 </button>
-                <button class="btn-icon btn-excluir" onclick="excluirTurma(${turma.id}, '${turma.nome}')">
+                <button class="btn-icon btn-excluir" onclick="excluirTurma(${turma.id || turma.ID}, '${(turma.nome || turma.NOME || '').replace(/'/g, "\\'")}')">
                     🗑️ Excluir
                 </button>
             </td>
@@ -153,14 +162,14 @@ function abrirModalNova() {
 }
 
 function editarTurma(id) {
-    turmaEditando = turmas.find(t => t.id === id);
+    turmaEditando = turmas.find(t => (t.id || t.ID) == id);
     if (!turmaEditando) return;
 
     document.getElementById('modalTitulo').textContent = 'Editar Turma';
-    document.getElementById('turmaId').value = turmaEditando.id;
-    document.getElementById('turmaDisciplinaId').value = turmaEditando.disciplina_id;
-    document.getElementById('inputNomeTurma').value = turmaEditando.nome;
-    document.getElementById('inputDisciplinaModal').value = turmaEditando.disciplina_nome;
+    document.getElementById('turmaId').value = (turmaEditando.id || turmaEditando.ID);
+    document.getElementById('turmaDisciplinaId').value = (turmaEditando.disciplina_id || turmaEditando.DISCIPLINA_ID);
+    document.getElementById('inputNomeTurma').value = (turmaEditando.nome || turmaEditando.NOME || '');
+    document.getElementById('inputDisciplinaModal').value = (turmaEditando.disciplina_nome || turmaEditando.DISCIPLINA_NOME || '');
     document.getElementById('modalTurma').style.display = 'block';
 }
 
@@ -179,7 +188,7 @@ async function salvarTurma(e) {
     const dados = {
         nome,
         disciplina_id: parseInt(disciplinaId),
-        usuario_id: 1
+        usuario_id: Number(localStorage.getItem('usuarioId'))
     };
 
     try {
@@ -219,7 +228,8 @@ async function confirmarExclusao() {
     if (!turmaEditando) return;
 
     try {
-        const response = await fetch(`${API_URL}/turmas/${turmaEditando.id}?usuario_id=1`, {
+        const usuarioId = localStorage.getItem('usuarioId');
+        const response = await fetch(`${API_URL}/turmas/${turmaEditando.id}?usuario_id=${usuarioId}`, {
             method: 'DELETE'
         });
 

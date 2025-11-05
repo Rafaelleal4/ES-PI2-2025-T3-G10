@@ -89,7 +89,7 @@ router.post('/', async (req: Request, res: Response) => {
 router.get('/', async (req: Request, res: Response) => {
   try {
     const { disciplina_id } = req.query;
-    const usuario_id = req.body.usuario_id;
+    const usuario_id = req.query.usuario_id || req.body.usuario_id;
 
     if (!disciplina_id) {
       return res.status(400).json({
@@ -105,7 +105,7 @@ router.get('/', async (req: Request, res: Response) => {
        JOIN instituicoes i ON c.instituicao_id = i.id
        WHERE d.id = :disciplina_id 
        AND i.usuario_id = :usuario_id`,
-      { disciplina_id, usuario_id }
+      { disciplina_id: Number(disciplina_id), usuario_id: Number(usuario_id) }
     );
 
     if (!disciplinaCheck.rows || disciplinaCheck.rows.length === 0) {
@@ -120,12 +120,14 @@ router.get('/', async (req: Request, res: Response) => {
       DISCIPLINA_ID: number;
       NOME: string;
       CRIADO_EM: Date;
+      DISCIPLINA_NOME: string;
     }>(
-      `SELECT id, disciplina_id, nome, criado_em
-       FROM turmas
-       WHERE disciplina_id = :disciplina_id
-       ORDER BY criado_em ASC`,
-      { disciplina_id }
+      `SELECT t.id, t.disciplina_id, t.nome, t.criado_em, d.nome AS disciplina_nome
+       FROM turmas t
+       JOIN disciplinas d ON t.disciplina_id = d.id
+       WHERE t.disciplina_id = :disciplina_id
+       ORDER BY t.criado_em ASC`,
+      { disciplina_id: Number(disciplina_id) }
     );
 
     return res.status(200).json({
@@ -134,7 +136,8 @@ router.get('/', async (req: Request, res: Response) => {
         id: t.ID,
         disciplina_id: t.DISCIPLINA_ID,
         nome: t.NOME,
-        criado_em: t.CRIADO_EM
+        criado_em: t.CRIADO_EM,
+        disciplina_nome: t.DISCIPLINA_NOME
       })) || []
     });
 
@@ -150,7 +153,7 @@ router.get('/', async (req: Request, res: Response) => {
 router.get('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const usuario_id = req.body.usuario_id;
+    const usuario_id = req.query.usuario_id || req.body.usuario_id;
 
     const resultado = await executeQuery<{
       ID: number;
@@ -165,7 +168,7 @@ router.get('/:id', async (req: Request, res: Response) => {
        JOIN instituicoes i ON c.instituicao_id = i.id
        WHERE t.id = :id 
        AND i.usuario_id = :usuario_id`,
-      { id, usuario_id }
+      { id: Number(id), usuario_id: Number(usuario_id) }
     );
 
     if (!resultado.rows || resultado.rows.length === 0) {
@@ -271,7 +274,7 @@ router.put('/:id', async (req: Request, res: Response) => {
 router.delete('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const usuario_id = req.body.usuario_id;
+    const usuario_id = Number((req.query.usuario_id as string) || (req.body as any).usuario_id);
 
     const turmaCheck = await executeQuery(
       `SELECT t.id
@@ -281,7 +284,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
        JOIN instituicoes i ON c.instituicao_id = i.id
        WHERE t.id = :id 
        AND i.usuario_id = :usuario_id`,
-      { id, usuario_id }
+      { id: Number(id), usuario_id }
     );
 
     if (!turmaCheck.rows || turmaCheck.rows.length === 0) {
@@ -295,7 +298,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
       `SELECT COUNT(*) as total
        FROM notas
        WHERE turma_id = :id`,
-      { id }
+      { id: Number(id) }
     );
 
     const totalNotas = notasCheck.rows?.[0]?.TOTAL || 0;
@@ -311,7 +314,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
       `SELECT COUNT(*) as total
        FROM turmas_alunos
        WHERE turma_id = :id`,
-      { id }
+      { id: Number(id) }
     );
 
     const totalAlunos = alunosCheck.rows?.[0]?.TOTAL || 0;
@@ -325,7 +328,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
 
     await executeQuery(
       `DELETE FROM turmas WHERE id = :id`,
-      { id }
+      { id: Number(id) }
     );
 
     return res.status(200).json({

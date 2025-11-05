@@ -10,14 +10,23 @@ let alunoEditando = null;
 let alunoVinculando = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+    const usuarioId = localStorage.getItem('usuarioId');
+    if (!usuarioId) { window.location.href = '/login'; return; }
     carregarAlunos();
     carregarDisciplinas();
     configurarEventos();
 });
 
 function configurarEventos() {
-    document.getElementById('btnVoltar').addEventListener('click', () => {
-        window.history.back();
+    document.getElementById('btnDashboard').addEventListener('click', () => {
+        window.location.href = '/';
+    });
+
+    document.getElementById('btnSair').addEventListener('click', () => {
+        if (confirm('Deseja realmente sair?')) {
+            localStorage.removeItem('usuarioId');
+            window.location.href = '/login';
+        }
     });
 
     document.getElementById('btnNovoAluno').addEventListener('click', abrirModalNovo);
@@ -49,7 +58,7 @@ function configurarEventos() {
 
 async function carregarAlunos() {
     try {
-        const usuarioId = 1;
+        const usuarioId = localStorage.getItem('usuarioId');
         const response = await fetch(`${API_URL}/alunos?usuario_id=${usuarioId}`);
         const data = await response.json();
 
@@ -67,7 +76,7 @@ async function carregarAlunos() {
 
 async function carregarDisciplinas() {
     try {
-        const usuarioId = 1;
+        const usuarioId = localStorage.getItem('usuarioId');
         const response = await fetch(`${API_URL}/disciplinas?usuario_id=${usuarioId}`);
         const data = await response.json();
 
@@ -92,7 +101,7 @@ async function carregarTurmasPorDisciplina() {
     }
 
     try {
-        const usuarioId = 1;
+        const usuarioId = localStorage.getItem('usuarioId');
         const response = await fetch(`${API_URL}/turmas?disciplina_id=${disciplinaId}&usuario_id=${usuarioId}`);
         const data = await response.json();
 
@@ -101,8 +110,8 @@ async function carregarTurmasPorDisciplina() {
             selectTurma.innerHTML = '<option value="">Selecione uma turma...</option>';
             turmas.forEach(turma => {
                 const option = document.createElement('option');
-                option.value = turma.id;
-                option.textContent = turma.nome;
+                option.value = (turma.id || turma.ID);
+                option.textContent = (turma.nome || turma.NOME || '-');
                 selectTurma.appendChild(option);
             });
             selectTurma.disabled = false;
@@ -129,16 +138,16 @@ function renderizarTabela() {
 
     tbody.innerHTML = alunos.map(aluno => `
         <tr>
-            <td>${aluno.identificador}</td>
-            <td>${aluno.nome}</td>
+            <td>${aluno.identificador || aluno.IDENTIFICADOR || '-'}</td>
+            <td>${aluno.nome || aluno.NOME || '-'}</td>
             <td class="acoes-tabela">
-                <button class="btn-icon btn-editar" onclick="editarAluno(${aluno.id})">
+                <button class="btn-icon btn-editar" onclick="editarAluno(${aluno.id || aluno.ID})">
                     ✏️ Editar
                 </button>
-                <button class="btn-icon btn-vincular" onclick="abrirModalVincularAluno(${aluno.id}, '${aluno.nome}')">
+                <button class="btn-icon btn-vincular" onclick="abrirModalVincularAluno(${aluno.id || aluno.ID}, '${(aluno.nome || aluno.NOME || '').replace(/'/g, "\\'")}')">
                     🔗 Vincular
                 </button>
-                <button class="btn-icon btn-excluir" onclick="excluirAluno(${aluno.id}, '${aluno.nome}')">
+                <button class="btn-icon btn-excluir" onclick="excluirAluno(${aluno.id || aluno.ID}, '${(aluno.nome || aluno.NOME || '').replace(/'/g, "\\'")}')">
                     🗑️ Excluir
                 </button>
             </td>
@@ -156,13 +165,13 @@ function abrirModalNovo() {
 }
 
 function editarAluno(id) {
-    alunoEditando = alunos.find(a => a.id === id);
+    alunoEditando = alunos.find(a => (a.id || a.ID) == id);
     if (!alunoEditando) return;
 
     document.getElementById('modalTitulo').textContent = 'Editar Aluno';
-    document.getElementById('alunoId').value = alunoEditando.id;
-    document.getElementById('inputIdentificador').value = alunoEditando.identificador;
-    document.getElementById('inputNome').value = alunoEditando.nome;
+    document.getElementById('alunoId').value = (alunoEditando.id || alunoEditando.ID);
+    document.getElementById('inputIdentificador').value = (alunoEditando.identificador || alunoEditando.IDENTIFICADOR || '');
+    document.getElementById('inputNome').value = (alunoEditando.nome || alunoEditando.NOME || '');
     document.getElementById('modalAluno').style.display = 'block';
 }
 
@@ -181,7 +190,7 @@ async function salvarAluno(e) {
     const dados = {
         identificador,
         nome,
-        usuario_id: 1
+        usuario_id: Number(localStorage.getItem('usuarioId'))
     };
 
     try {
@@ -244,7 +253,7 @@ async function vincularAluno(e) {
 
     const dados = {
         turma_id: parseInt(turmaId),
-        usuario_id: 1
+        usuario_id: Number(localStorage.getItem('usuarioId'))
     };
 
     try {
@@ -280,7 +289,8 @@ async function confirmarExclusao() {
     if (!alunoEditando) return;
 
     try {
-        const response = await fetch(`${API_URL}/alunos/${alunoEditando.id}?usuario_id=1`, {
+        const usuarioId = localStorage.getItem('usuarioId');
+        const response = await fetch(`${API_URL}/alunos/${alunoEditando.id}?usuario_id=${usuarioId}`, {
             method: 'DELETE'
         });
 
