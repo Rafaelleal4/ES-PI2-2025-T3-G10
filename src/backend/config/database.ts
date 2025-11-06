@@ -1,11 +1,9 @@
 /**
  * Configurações do Banco de Dados Oracle
  * Autor: Rafael Leal
+ * 
+ * NOTA: O dotenv.config() é chamado no index.ts principal
  */
-
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 export const dbConfig = {
   user: process.env.ORACLE_USER || '',
