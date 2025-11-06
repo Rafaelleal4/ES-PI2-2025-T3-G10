@@ -1,26 +1,109 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Notas</title>
-  <link rel="stylesheet" href="/notas/notas.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciar Componentes de Nota - Sistema de Notas</title>
+  <link rel="stylesheet" href="notas.css">
 </head>
 <body>
-  <header class="topbar">
-    <h1>Notas</h1>
-    <nav>
-      <a href="/dashboard">Dashboard</a>
-      <a href="/login">Sair</a>
-    </nav>
-  </header>
-  <main class="container">
-    <section class="card">
-      <h2>Gerenciar Notas</h2>
-      <p>Página em construção. Em breve você poderá cadastrar e gerenciar suas notas.</p>
-      <a href="/dashboard" class="btn">Voltar ao Dashboard</a>
-    </section>
-  </main>
+  <div class="container">
+    <header>
+      <h1>Gerenciar Componentes de Nota</h1>
+      <div>
+        <button id="btnDashboard" class="btn-secondary">Dashboard</button>
+        <button id="btnSair" class="btn-secondary">Sair</button>
+      </div>
+    </header>
+
+    <div class="acoes">
+      <button id="btnNovoComponente" class="btn-primary">
+        <span>+</span> Novo Componente
+      </button>
+    </div>
+
+    <div class="tabela-container">
+      <table id="tabelaComponentes">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Sigla</th>
+            <th>Descrição</th>
+            <th>Peso</th>
+            <th>Disciplina</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="listaComponentes">
+          <tr class="sem-dados">
+            <td colspan="6">Carregando...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Criar/editar componente -->
+  <div id="modalComponente" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitulo">Novo Componente de Nota</h2>
+        <span class="close">&times;</span>
+      </div>
+      <form id="formComponente">
+        <input type="hidden" id="componenteId">
+
+        <div class="form-group">
+          <label for="inputNome">Nome:</label>
+          <input type="text" id="inputNome" placeholder="Ex: Prova 1" required>
+        </div>
+
+        <div class="form-group">
+          <label for="inputSigla">Sigla:</label>
+          <input type="text" id="inputSigla" placeholder="Ex: P1" required>
+        </div>
+
+        <div class="form-group">
+          <label for="inputDescricao">Descrição:</label>
+          <textarea id="inputDescricao" placeholder="Ex: Avaliação teórica do módulo 1"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="inputPeso">Peso (0 a 1):</label>
+          <input type="number" id="inputPeso" step="0.1" min="0" max="1" placeholder="Ex: 0.4" required>
+        </div>
+
+        <div class="form-group">
+          <label for="inputDisciplina">ID da Disciplina:</label>
+          <input type="number" id="inputDisciplina" placeholder="Ex: 101" required>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="btnCancelar">Cancelar</button>
+          <button type="submit" class="btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirmação de exclusão -->
+  <div id="modalConfirmacao" class="modal">
+    <div class="modal-content modal-small">
+      <div class="modal-header">
+        <h2>Confirmar Exclusão</h2>
+        <span class="close">&times;</span>
+      </div>
+      <div class="modal-body">
+        <p>Tem certeza que deseja excluir o componente <strong id="componenteNomeExcluir"></strong>?</p>
+        <p class="aviso">Esta ação não poderá ser desfeita.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" id="btnCancelarExclusao">Cancelar</button>
+        <button type="button" class="btn-danger" id="btnConfirmarExclusao">Excluir</button>
+      </div>
+    </div>
+  </div>
+
   <script src="/notas/notas.js"></script>
 </body>
 </html>
