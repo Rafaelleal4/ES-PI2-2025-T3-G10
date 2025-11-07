@@ -1,6 +1,3 @@
-/**
- * Importar Alunos (CSV) - Sistema de Notas
- */
 
 // Constantes
 const API_URL = 'http://localhost:5000/api';
