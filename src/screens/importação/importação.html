@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Importar Alunos (CSV) - Sistema de Notas</title>
+    
+    <link rel="stylesheet" href="/instituicoes/instituicoes.css">
+    
+    <link rel="stylesheet" href="/importar/importar.css"> 
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Importar Alunos (CSV)</h1>
+            <div>
+                <button id="btnDashboard" class="btn-secondary">Dashboard</button>
+                <button id="btnSair" class="btn-secondary">Sair</button>
+            </div>
+        </header>
+
+        <div class="tabela-container">
+            
+            <form id="formImportar" enctype="multipart/form-data">
+                
+                <div class="form-group">
+                    <label for="inputArquivoCsv">Selecione o arquivo .CSV para importar</label>
+                    
+                    <input type="file" id="inputArquivoCsv" name="arquivoCsv" accept=".csv" required>
+                    
+                    <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                        O arquivo será processado no servidor. Certifique-se de que ele segue o modelo correto.
+                    </p>
+                </div>
+
+                <div style="margin-top: 1.5rem; text-align: right;">
+                    <button type="submit" id="btnImportar" class="btn-primary">
+                        <span>📤</span> Importar Arquivo
+                    </button>
+                </div>
+            </form>
+
+            <div id="areaFeedback" style="margin-top: 2rem; display: none;">
+                </div>
+
+        </div>
+    </div>
+
+    <script src="/importar/importar.js"></script>
+</body>
+</html>

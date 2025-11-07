@@ -1,0 +1,61 @@
+#formImportar .form-group input[type="file"] {
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    transition: var(--transition);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+#formImportar .form-group input[type="file"]::-webkit-file-upload-button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: var(--radius-sm);
+    margin-right: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+    font-weight: 600;
+}
+
+#formImportar .form-group input[type="file"]::-webkit-file-upload-button:hover {
+    background: var(--primary-dark);
+}
+
+.feedback-sucesso {
+    background: #e0f2fe; 
+    color: #0c4a6e; 
+    border-left: 4px solid #0ea5e9;
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.feedback-erro {
+    background: #fee2e2;
+    color: #991b1b;
+    border-left: 4px solid var(--danger-color);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.feedback-erro strong,
+.feedback-sucesso strong {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    font-size: 1rem;
+}
+
+.feedback-erro ul {
+    margin-top: 0.5rem;
+    margin-left: 1.25rem;
+}
