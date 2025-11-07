@@ -1,128 +1,115 @@
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f2f5;
+    font-family: 'Inter', Arial, sans-serif;
+    background-color: #f5f7fa;
     margin: 0;
-    padding: 20px;
+    padding: 0;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     min-height: 100vh;
 }
+
 
 .container {
     max-width: 1000px;
     width: 90%;
-    margin: 20px auto;
-    padding: 30px;
+    margin: 60px auto;
     background-color: #ffffff;
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
     text-align: center;
 }
 
+
 h1 {
-    font-size: 28px;
-    color: #333;
-    margin-bottom: 30px;
+    background-color: #1e40af; 
+    color: #ffffff;
+    padding: 20px 0;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+    border-bottom: 4px solid #facc15; 
 }
+
 
 .tabela-notas {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    margin-top: 25px;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-.tabela-notas th,
-.tabela-notas td {
-    border: none;
-    padding: 15px 12px;
-    text-align: left;
-    background-color: #ffffff;
+    border-collapse: collapse;
+    margin-top: 0;
 }
 
 .tabela-notas thead th {
-    background-color: #007bff;
-    color: white;
+    background-color: #1e40af; 
+    color: #fff;
     text-align: center;
     font-weight: 600;
+    padding: 16px 12px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    padding: 18px 12px;
 }
 
-.tabela-notas thead tr:first-child th:first-child {
-    border-top-left-radius: 8px;
-}
-.tabela-notas thead tr:first-child th:last-child {
-    border-top-right-radius: 8px;
+.tabela-notas tbody td {
+    background-color: #ffffff;
+    padding: 14px 12px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #1e293b;
+    text-align: center;
 }
 
 .tabela-notas tbody tr:nth-child(even) td {
-    background-color: #f8faff;
+    background-color: #f8fafc; 
 }
 
-.tabela-notas td[data-aluno-id] {
-    font-weight: 500;
-    color: #555;
-}
 
 .input-nota {
-    width: calc(100% - 20px);
+    width: 90%;
     padding: 10px;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #cbd5e1;
     border-radius: 8px;
-    box-sizing: border-box;
-    text-align: center;
     font-size: 1em;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
+    transition: all 0.2s ease-in-out;
 }
 
 .input-nota:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
     outline: none;
 }
 
-.btn-salvar,
-.btn-adicionar {
-    display: inline-block;
-    min-width: 180px;
-    
-    padding: 14px 25px;
-    background-color: #007bff;
-    color: white;
+
+.botoes-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 30px 0 40px;
+    background-color: #fff;
+}
+
+
+.btn-adicionar,
+.btn-salvar {
+    background-color: #2563eb; 
+    color: #fff;
     font-size: 16px;
     font-weight: 600;
     border: none;
     border-radius: 8px;
+    padding: 12px 28px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+    transition: all 0.2s ease-in-out;
 }
 
-
-.btn-salvar:hover,
-.btn-adicionar:hover {
-    background-color: #0056b3;
+.btn-adicionar:hover,
+.btn-salvar:hover {
+    background-color: #1d4ed8;
     transform: translateY(-2px);
 }
 
-
-.btn-salvar:active,
-.btn-adicionar:active {
+.btn-adicionar:active,
+.btn-salvar:active {
     transform: translateY(0);
-}
-
-
-
-
-.botoes-container {
-    margin-top: 40px;
-    display: flex;
-    justify-content: center;
-    gap: 20px;
 }

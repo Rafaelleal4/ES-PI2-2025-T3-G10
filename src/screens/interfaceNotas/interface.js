@@ -35,15 +35,13 @@ document.addEventListener("DOMContentLoaded", () => {
     btnSalvar.addEventListener("click", () => { 
         
         const todasAsNotas = [];
-        // O querySelector busca o PRIMEIRO elemento no HTML que bate com o seletor CSS (ex: ".minha-classe" ou "#meu-id").
         const linhasTabela = document.querySelectorAll(".tabela-notas tbody tr");
-        // O forEach é um loop que passa por CADA item de uma lista (Array), um por um.
         linhasTabela.forEach(linha => {
             
             const celulaAluno = linha.querySelector("td[data-aluno-id]");
             const alunoNome = celulaAluno.textContent;
-            // O .getAttribute() lê o valor de um atributo que está escrito na tag HTML.
             const alunoId = celulaAluno.getAttribute("data-aluno-id");
+
             const inputsNota = linha.querySelectorAll(".input-nota");
 
             const notasDoAluno = {
