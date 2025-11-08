@@ -3,8 +3,10 @@
  */
 
 const API_URL = 'http://localhost:5000/api';
+let instituicoes = [];
 let cursos = [];
 let disciplinas = [];
+let instituicaoSelecionada = null;
 let cursoSelecionado = null;
 let disciplinaEditando = null;
 
@@ -14,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '/login';
         return;
     }
-    carregarCursos();
+    carregarInstituicoes();
     configurarEventos();
 });
 
@@ -27,6 +29,23 @@ function configurarEventos() {
         if (confirm('Deseja realmente sair?')) {
             localStorage.removeItem('usuarioId');
             window.location.href = '/login';
+        }
+    });
+
+    document.getElementById('selectInstituicao').addEventListener('change', (e) => {
+        const instituicaoId = e.target.value;
+        const selectCurso = document.getElementById('selectCurso');
+        if (instituicaoId) {
+            instituicaoSelecionada = instituicoes.find(i => i.id == instituicaoId);
+            carregarCursos(instituicaoId);
+            selectCurso.disabled = false;
+        } else {
+            instituicaoSelecionada = null;
+            cursos = [];
+            preencherSelectCursos();
+            selectCurso.disabled = true;
+            document.getElementById('btnNovaDisciplina').disabled = true;
+            limparTabela();
         }
     });
 
@@ -64,10 +83,39 @@ function configurarEventos() {
     });
 }
 
-async function carregarCursos() {
+async function carregarInstituicoes() {
     try {
         const usuarioId = localStorage.getItem('usuarioId');
-        const response = await fetch(`${API_URL}/cursos?usuario_id=${usuarioId}`);
+        const response = await fetch(`${API_URL}/instituicoes?usuario_id=${usuarioId}`);
+        const data = await response.json();
+
+        if (data.sucesso) {
+            instituicoes = data.dados;
+            preencherSelectInstituicoes();
+        } else {
+            alert('Erro ao carregar instituições: ' + data.mensagem);
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao conectar com o servidor');
+    }
+}
+
+function preencherSelectInstituicoes() {
+    const select = document.getElementById('selectInstituicao');
+    select.innerHTML = '<option value="">Selecione uma instituição...</option>';
+    instituicoes.forEach(inst => {
+        const option = document.createElement('option');
+        option.value = (inst.id || inst.ID);
+        option.textContent = (inst.nome || inst.NOME || '-');
+        select.appendChild(option);
+    });
+}
+
+async function carregarCursos(instituicaoId) {
+    try {
+        const usuarioId = localStorage.getItem('usuarioId');
+        const response = await fetch(`${API_URL}/cursos?instituicao_id=${instituicaoId}&usuario_id=${usuarioId}`);
         const data = await response.json();
 
         if (data.sucesso) {
@@ -89,7 +137,7 @@ function preencherSelectCursos() {
     cursos.forEach(curso => {
         const option = document.createElement('option');
         option.value = (curso.id || curso.ID);
-        option.textContent = `${(curso.nome || curso.NOME || '-')}${curso.instituicao_nome || curso.INSTITUICAO_NOME ? ' - ' + (curso.instituicao_nome || curso.INSTITUICAO_NOME) : ''}`;
+        option.textContent = `${(curso.nome || curso.NOME || '-')}`;
         select.appendChild(option);
     });
 }
@@ -131,6 +179,7 @@ function renderizarTabela() {
             <td>${disciplina.sigla || disciplina.SIGLA || '-'}</td>
             <td>${(disciplina.periodo || disciplina.PERIODO) ?? '-'}</td>
             <td>${disciplina.curso_nome || disciplina.CURSO_NOME || '-'}</td>
+            <td>${disciplina.instituicao_nome || disciplina.INSTITUICAO_NOME || '-'}</td>
             <td class="acoes-tabela">
                 <button class="btn-icon btn-editar" onclick="editarDisciplina(${disciplina.id || disciplina.ID})">
                     ✏️ Editar
@@ -147,7 +196,7 @@ function limparTabela() {
     const tbody = document.getElementById('listaDisciplinas');
     tbody.innerHTML = `
         <tr class="sem-dados">
-            <td colspan="6">Selecione um curso para visualizar as disciplinas</td>
+            <td colspan="7">Selecione uma instituição e um curso para visualizar as disciplinas</td>
         </tr>
     `;
 }
