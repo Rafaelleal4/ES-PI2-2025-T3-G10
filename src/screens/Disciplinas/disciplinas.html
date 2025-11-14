@@ -17,11 +17,19 @@
         </header>
 
         <div class="filtros">
-            <div class="form-group">
-                <label for="selectCurso">Curso:</label>
-                <select id="selectCurso" required>
-                    <option value="">Selecione um curso...</option>
-                </select>
+            <div class="filtros-grid">
+                <div class="form-group">
+                    <label for="selectInstituicao">Instituição:</label>
+                    <select id="selectInstituicao" required>
+                        <option value="">Selecione uma instituição...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="selectCurso">Curso:</label>
+                    <select id="selectCurso" required disabled>
+                        <option value="">Selecione uma instituição primeiro...</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -40,12 +48,13 @@
                         <th>Sigla</th>
                         <th>Período</th>
                         <th>Curso</th>
+                        <th>Instituição</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody id="listaDisciplinas">
                     <tr class="sem-dados">
-                        <td colspan="6">Selecione um curso para visualizar as disciplinas</td>
+                        <td colspan="7">Selecione uma instituição e um curso para visualizar as disciplinas</td>
                     </tr>
                 </tbody>
             </table>

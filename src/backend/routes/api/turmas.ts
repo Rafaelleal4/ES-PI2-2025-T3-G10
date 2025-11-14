@@ -345,4 +345,49 @@ router.delete('/:id', async (req: Request, res: Response) => {
   }
 });
 
+// GET /api/turmas/:id/alunos - lista alunos vinculados a uma turma
+router.get('/:id/alunos', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const usuario_id = req.query.usuario_id || req.body.usuario_id;
+
+    const turmaCheck = await executeQuery(
+      `SELECT t.id
+       FROM turmas t
+       JOIN disciplinas d ON t.disciplina_id = d.id
+       JOIN cursos c ON d.curso_id = c.id
+       JOIN instituicoes i ON c.instituicao_id = i.id
+       WHERE t.id = :id
+       AND i.usuario_id = :usuario_id`,
+      { id: Number(id), usuario_id: Number(usuario_id) }
+    );
+
+    if (!turmaCheck.rows || turmaCheck.rows.length === 0) {
+      return res.status(404).json({ sucesso: false, mensagem: 'Turma não encontrada ou você não tem permissão' });
+    }
+
+    const resultado = await executeQuery<{
+      ALUNO_ID: number;
+      IDENTIFICADOR: string;
+      NOME: string;
+    }>(
+      `SELECT a.id AS aluno_id, a.identificador, a.nome
+       FROM turmas_alunos ta
+       JOIN alunos a ON ta.aluno_id = a.id
+       WHERE ta.turma_id = :id
+       ORDER BY a.nome ASC`,
+      { id: Number(id) }
+    );
+
+    return res.status(200).json({
+      sucesso: true,
+      dados: resultado.rows?.map(r => ({ id: r.ALUNO_ID, identificador: r.IDENTIFICADOR, nome: r.NOME })) || []
+    });
+
+  } catch (error) {
+    console.error('Erro ao listar alunos da turma:', error);
+    return res.status(500).json({ sucesso: false, mensagem: 'Erro interno ao listar alunos da turma' });
+  }
+});
+
 export default router;
