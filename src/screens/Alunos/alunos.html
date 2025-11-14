@@ -22,6 +22,40 @@
             </button>
         </div>
 
+        <div class="filtros filtros-grid">
+            <div class="form-group">
+                <label for="filterInstituicao">Instituição:</label>
+                <select id="filterInstituicao">
+                    <option value="">Selecione uma instituição...</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="filterCurso">Curso:</label>
+                <select id="filterCurso" disabled>
+                    <option value="">Selecione uma instituição primeiro...</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="filterDisciplina">Disciplina:</label>
+                <select id="filterDisciplina" disabled>
+                    <option value="">Selecione um curso primeiro...</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="filterTurma">Turma:</label>
+                <select id="filterTurma" disabled>
+                    <option value="">Selecione uma disciplina primeiro...</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="align-self:center;">
+                <button id="btnLimparFiltro" class="btn-secondary">Limpar filtro</button>
+            </div>
+        </div>
+
         <div class="tabela-container">
             <table id="tabelaAlunos">
                 <thead>
@@ -33,7 +67,7 @@
                 </thead>
                 <tbody id="listaAlunos">
                     <tr class="sem-dados">
-                        <td colspan="3">Carregando...</td>
+                        <td colspan="3">Selecione Instituição, Curso, Disciplina e Turma para visualizar os alunos</td>
                     </tr>
                 </tbody>
             </table>
