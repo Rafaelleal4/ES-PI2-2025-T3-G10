@@ -2,7 +2,10 @@
  * Autor: Rafael Leal
  */
 
+// URL base da API
 const API_URL = 'http://localhost:5000/api';
+
+// Variáveis para armazenar dados e estado da página
 let instituicoes = [];
 let cursos = [];
 let disciplinas = [];
@@ -83,6 +86,7 @@ function configurarEventos() {
     });
 }
 
+// Busca as instituições disponíveis
 async function carregarInstituicoes() {
     try {
         const usuarioId = localStorage.getItem('usuarioId');
@@ -101,6 +105,7 @@ async function carregarInstituicoes() {
     }
 }
 
+// Preenche o dropdown de instituições
 function preencherSelectInstituicoes() {
     const select = document.getElementById('selectInstituicao');
     select.innerHTML = '<option value="">Selecione uma instituição...</option>';
@@ -112,6 +117,7 @@ function preencherSelectInstituicoes() {
     });
 }
 
+// Carrega os cursos da instituição selecionada
 async function carregarCursos(instituicaoId) {
     try {
         const usuarioId = localStorage.getItem('usuarioId');
@@ -130,6 +136,7 @@ async function carregarCursos(instituicaoId) {
     }
 }
 
+// Preenche o dropdown de cursos
 function preencherSelectCursos() {
     const select = document.getElementById('selectCurso');
     select.innerHTML = '<option value="">Selecione um curso...</option>';
@@ -142,6 +149,7 @@ function preencherSelectCursos() {
     });
 }
 
+// Busca as disciplinas do curso selecionado
 async function carregarDisciplinas(cursoId) {
     try {
         const usuarioId = localStorage.getItem('usuarioId');

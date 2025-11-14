@@ -2,7 +2,10 @@
  * Autor: Rafael Leal
  */
 
+// URL base da API
 const API_URL = 'http://localhost:5000/api';
+
+// Variáveis para guardar dados e controlar estado
 let instituicoes = [];
 let cursos = [];
 let instituicaoSelecionada = null;
@@ -59,6 +62,7 @@ function configurarEventos() {
     });
 }
 
+// Carrega lista de instituições do usuário
 async function carregarInstituicoes() {
     try {
         const usuarioId = 1;
@@ -77,6 +81,7 @@ async function carregarInstituicoes() {
     }
 }
 
+// Preenche o select com as instituições disponíveis
 function preencherSelectInstituicoes() {
     const select = document.getElementById('selectInstituicao');
     select.innerHTML = '<option value="">Selecione uma instituição...</option>';
@@ -89,6 +94,7 @@ function preencherSelectInstituicoes() {
     });
 }
 
+// Busca os cursos de uma instituição específica
 async function carregarCursos(instituicaoId) {
     try {
         if (!instituicaoId) {

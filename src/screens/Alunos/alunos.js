@@ -2,18 +2,21 @@
  * Autor: Rafael Leal
  */
 
+// URL da API
 const API_URL = 'http://localhost:5000/api';
+
+// Variáveis para armazenar dados
 let alunos = [];
 let disciplinas = [];
 let turmas = [];
 let alunoEditando = null;
 let alunoVinculando = null;
 
+// Executa ao carregar a página
 document.addEventListener('DOMContentLoaded', () => {
     const usuarioId = localStorage.getItem('usuarioId');
     if (!usuarioId) { window.location.href = '/login'; return; }
     carregarInstituicoes();
-    // carregarDisciplinas será chamado quando curso for selecionado
     configurarEventos();
 });
 
@@ -37,7 +40,8 @@ function configurarEventos() {
     document.getElementById('btnCancelarVincular').addEventListener('click', fecharModalVincular);
     
     document.getElementById('selectDisciplina').addEventListener('change', carregarTurmasPorDisciplina);
-    // novos filtros: instituição -> curso -> disciplina -> turma
+    
+    // Listener para filtro de instituição - carrega cursos quando selecionada
     document.getElementById('filterInstituicao').addEventListener('change', async (e) => {
         const instituicaoId = e.target.value;
         const filterCurso = document.getElementById('filterCurso');
@@ -168,6 +172,7 @@ function preencherSelectFiltroDisciplinas() {
 }
 
 // --- INSTITUIÇÕES / CURSOS / DISCIPLINAS helpers para os filtros ---
+// Carrega as instituições para o filtro
 async function carregarInstituicoes() {
     try {
         const usuarioId = localStorage.getItem('usuarioId');
@@ -203,6 +208,7 @@ async function carregarInstituicoes() {
     }
 }
 
+// Carrega cursos da instituição selecionada
 async function carregarCursosFilter(instituicaoId) {
     try {
         const usuarioId = localStorage.getItem('usuarioId');
@@ -236,6 +242,7 @@ async function carregarCursosFilter(instituicaoId) {
     }
 }
 
+// Carrega disciplinas do curso selecionado
 async function carregarDisciplinasPorCurso(cursoId) {
     try {
         const usuarioId = localStorage.getItem('usuarioId');
@@ -301,6 +308,7 @@ async function carregarTurmasFilter(disciplinaId) {
     }
 }
 
+// Busca os alunos de uma turma específica
 async function carregarAlunosPorTurma(turmaId) {
     try {
         const usuarioId = localStorage.getItem('usuarioId');
@@ -479,6 +487,7 @@ function abrirModalVincularAluno(id, nome) {
     document.getElementById('modalVincular').style.display = 'block';
 }
 
+// Vincula um aluno a uma turma
 async function vincularAluno(e) {
     e.preventDefault();
 

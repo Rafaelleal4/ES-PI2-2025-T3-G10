@@ -1,3 +1,7 @@
+/**
+ * Autor: Rafael Leal
+ */
+
 import { Express } from 'express';
 import { registerLoginRoutes } from './login';
 import { registerCadastroRoutes } from './cadastro';
