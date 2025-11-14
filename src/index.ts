@@ -1,3 +1,7 @@
+/**
+ * Autor: Rafael Leal
+ */
+
 import dotenv from 'dotenv';
 
 // IMPORTANTE: Carregar variáveis de ambiente ANTES de tudo

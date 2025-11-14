@@ -2,7 +2,10 @@
  * Autor: Rafael Leal
  */
 
+// URL da API
 const API_URL = 'http://localhost:5000/api';
+
+// Variáveis para armazenar listas e estado
 let instituicoes = [];
 let cursos = [];
 let disciplinas = [];
@@ -194,6 +197,7 @@ function preencherSelectDisciplinas() {
     });
 }
 
+// Busca as turmas da disciplina selecionada
 async function carregarTurmas(disciplinaId) {
     try {
         const usuarioId = localStorage.getItem('usuarioId');
@@ -212,6 +216,7 @@ async function carregarTurmas(disciplinaId) {
     }
 }
 
+// Exibe as turmas na tabela
 function renderizarTabela() {
     const tbody = document.getElementById('listaTurmas');
 

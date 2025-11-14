@@ -3,11 +3,15 @@
  * Autor: Rafael Leal
  */
 
+// URL base da API
 const API_URL = 'http://localhost:5000/api';
+
+// Variáveis globais para guardar os dados
 let instituicoes = [];
 let instituicaoEditando = null;
 let instituicaoExcluindo = null;
 
+// Executa quando a página carrega
 document.addEventListener('DOMContentLoaded', () => {
     const usuarioId = getUsuarioId();
     if (!usuarioId) {
@@ -57,6 +61,7 @@ function configurarEventos() {
     });
 }
 
+// Busca as instituições do usuário na API
 async function carregarInstituicoes() {
     try {
         const usuarioId = getUsuarioId();
@@ -75,6 +80,7 @@ async function carregarInstituicoes() {
     }
 }
 
+// Mostra as instituições na tabela
 function renderizarTabela() {
     const tbody = document.getElementById('listaInstituicoes');
 
@@ -102,6 +108,7 @@ function renderizarTabela() {
     `).join('');
 }
 
+// Abre o modal para criar nova instituição
 function abrirModalNovo() {
     instituicaoEditando = null;
     document.getElementById('modalTitulo').textContent = 'Nova Instituição';
@@ -110,6 +117,7 @@ function abrirModalNovo() {
     document.getElementById('modalInstituicao').style.display = 'block';
 }
 
+// Abre o modal para editar uma instituição existente
 function editarInstituicao(id) {
     instituicaoEditando = instituicoes.find(i => (i.id || i.ID) == id);
     
@@ -124,6 +132,7 @@ function editarInstituicao(id) {
     document.getElementById('modalInstituicao').style.display = 'block';
 }
 
+// Salva uma instituição (criar nova ou atualizar existente)
 async function salvarInstituicao(e) {
     e.preventDefault();
 
@@ -178,6 +187,7 @@ function excluirInstituicao(id, nome) {
     document.getElementById('modalConfirmacao').style.display = 'block';
 }
 
+// Confirma e executa a exclusão da instituição
 async function confirmarExclusao() {
     if (!instituicaoExcluindo) return;
 

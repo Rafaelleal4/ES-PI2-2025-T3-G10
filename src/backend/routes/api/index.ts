@@ -1,3 +1,7 @@
+/**
+ * Autor: Rafael Leal
+ */
+
 import { Express } from 'express';
 import authRoutes from './auth';
 import instituicoesRoutes from './instituicoes';
