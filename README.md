@@ -49,14 +49,27 @@ Depois disso, `npm install` funcionará normalmente.
    Copy-Item .env.example .env
    ```
 
-2. **Edite o arquivo `.env`** com suas credenciais Oracle:
+2. **Edite o arquivo `.env`** com suas credenciais Oracle e configurações de e-mail:
    ```env
+   # Configurações do Banco de Dados Oracle
    ORACLE_USER=seu_usuario_puc
    ORACLE_PASSWORD=sua_senha_puc
    ORACLE_HOST=172.16.12.14
    ORACLE_PORT=1521
    ORACLE_SID=XE
-  PORT=5000
+
+   # Porta do servidor Node.js
+   PORT=5000
+
+   # Configurações de E-mail (para recuperação de senha)
+   EMAIL_HOST=smtp.gmail.com
+   EMAIL_PORT=587
+   EMAIL_SECURE=false
+   EMAIL_USER=seu_email@gmail.com
+   EMAIL_PASS=sua_senha_de_app
+
+   # URL base da aplicação (para links de recuperação)
+   BASE_URL=http://localhost:5000
    ```
 
 **⚠️ IMPORTANTE:** Nunca faça commit do arquivo `.env` no Git!
@@ -70,10 +83,11 @@ Depois disso, `npm install` funcionará normalmente.
 
 1. Abra o **SQL Developer**
 2. Conecte ao seu schema Oracle
-3. Execute o schema:
+3. Execute os scripts na seguinte ordem:
    - **File > Open...** → Selecione `db/oracle/schema.sql`
    - Pressione **F5** (Run Script)
-   - Aguarde a criação de 10 tabelas, 10 índices e 2 triggers
+   - Aguarde a criação de todas as tabelas, índices e triggers
+   - Execute `db/oracle/tokens_recuperacao.sql` para criar a tabela de tokens de recuperação de senha
 
 #### 4.3) Inserir dados de teste (opcional, mas recomendado)
 
@@ -108,10 +122,17 @@ Servidor rodando em http://localhost:5000
 
 ### Páginas HTML
 
+- **Dashboard:** http://localhost:5000/
 - **Login:** http://localhost:5000/login
 - **Cadastro:** http://localhost:5000/cadastro
 - **Recuperação de senha:** http://localhost:5000/recuperacao-senha
 - **Redefinir senha (via link do e-mail):** http://localhost:5000/redefinir-senha?token=SEU_TOKEN
+- **Instituições:** http://localhost:5000/instituicoes
+- **Cursos:** http://localhost:5000/cursos
+- **Disciplinas:** http://localhost:5000/disciplinas
+- **Turmas:** http://localhost:5000/turmas
+- **Alunos:** http://localhost:5000/alunos
+- **Notas:** http://localhost:5000/notas
 
 ### API REST - Autenticação
 
@@ -131,9 +152,9 @@ Cadastra um novo professor no sistema.
 **Resposta (201):**
 ```json
 {
-  "ok": true,
-  "message": "Cadastro realizado com sucesso!",
-  "data": {
+  "sucesso": true,
+  "mensagem": "Cadastro realizado com sucesso!",
+  "dados": {
     "id": 2,
     "nome": "Prof. Maria Silva",
     "email": "maria.silva@puc.br"
@@ -148,16 +169,16 @@ Autentica um professor no sistema.
 ```json
 {
   "email": "joao.silva@puc.br",
-  "password": "senha123"
+  "senha": "senha123"
 }
 ```
 
 **Resposta (200):**
 ```json
 {
-  "ok": true,
-  "message": "Login realizado com sucesso!",
-  "data": {
+  "sucesso": true,
+  "mensagem": "Login realizado com sucesso!",
+  "dados": {
     "id": 1,
     "nome": "Prof. João Silva",
     "email": "joao.silva@puc.br",
@@ -179,8 +200,8 @@ Inicia o processo de recuperação de senha: gera token (1h de validade), salva 
 **Resposta (200):**
 ```json
 {
-  "ok": true,
-  "message": "Se o email estiver cadastrado, você receberá um link de recuperação"
+  "sucesso": true,
+  "mensagem": "Se o email estiver cadastrado, você receberá um link de recuperação"
 }
 ```
 
@@ -198,23 +219,107 @@ Redefine a senha a partir de um token válido e não utilizado.
 **Resposta (200):**
 ```json
 {
-  "ok": true,
-  "message": "Senha redefinida com sucesso! Você já pode fazer login."
+  "sucesso": true,
+  "mensagem": "Senha redefinida com sucesso! Você já pode fazer login."
 }
 ```
 
-#### GET `/api/auth/status`
-Verifica status da conexão com banco Oracle.
+---
 
-**Resposta (200):**
-```json
-{
-  "ok": true,
-  "message": "Conexão com banco OK",
-  "database": "Oracle",
-  "timestamp": "2025-10-23T19:50:00.000Z"
-}
-```
+## 📚 API REST - Gerenciamento
+
+### Instituições
+
+#### GET `/api/instituicoes?usuario_id=1`
+Lista todas as instituições do professor.
+
+#### POST `/api/instituicoes`
+Cria uma nova instituição.
+
+#### PUT `/api/instituicoes/:id`
+Atualiza uma instituição existente.
+
+#### DELETE `/api/instituicoes/:id?usuario_id=1`
+Exclui uma instituição (apenas se não tiver cursos vinculados).
+
+### Cursos
+
+#### GET `/api/cursos?instituicao_id=1&usuario_id=1`
+Lista cursos de uma instituição.
+
+#### POST `/api/cursos`
+Cria um novo curso.
+
+#### PUT `/api/cursos/:id`
+Atualiza um curso existente.
+
+#### DELETE `/api/cursos/:id?usuario_id=1`
+Exclui um curso (apenas se não tiver disciplinas vinculadas).
+
+### Disciplinas
+
+#### GET `/api/disciplinas?curso_id=1&usuario_id=1`
+Lista disciplinas de um curso.
+
+#### POST `/api/disciplinas`
+Cria uma nova disciplina.
+
+#### PUT `/api/disciplinas/:id`
+Atualiza uma disciplina existente.
+
+#### DELETE `/api/disciplinas/:id?usuario_id=1`
+Exclui uma disciplina (apenas se não tiver turmas vinculadas).
+
+### Turmas
+
+#### GET `/api/turmas?disciplina_id=1&usuario_id=1`
+Lista turmas de uma disciplina.
+
+#### GET `/api/turmas/:id/alunos?usuario_id=1`
+Lista alunos de uma turma específica.
+
+#### POST `/api/turmas`
+Cria uma nova turma.
+
+#### PUT `/api/turmas/:id`
+Atualiza uma turma existente.
+
+#### DELETE `/api/turmas/:id?usuario_id=1`
+Exclui uma turma.
+
+### Alunos
+
+#### GET `/api/alunos?usuario_id=1`
+Lista todos os alunos do professor.
+
+#### POST `/api/alunos`
+Cria um novo aluno.
+
+#### POST `/api/alunos/:id/vincular-turma`
+Vincula um aluno a uma turma.
+
+#### PUT `/api/alunos/:id`
+Atualiza dados de um aluno.
+
+#### DELETE `/api/alunos/:id?usuario_id=1`
+Exclui um aluno.
+
+---
+
+## 🎯 Funcionalidades Implementadas
+
+- ✅ Autenticação (login/cadastro)
+- ✅ Recuperação de senha por e-mail
+- ✅ Dashboard com navegação
+- ✅ CRUD de Instituições
+- ✅ CRUD de Cursos (vinculados a instituições)
+- ✅ CRUD de Disciplinas (vinculadas a cursos)
+- ✅ CRUD de Turmas (vinculadas a disciplinas)
+- ✅ CRUD de Alunos
+- ✅ Vinculação de alunos a turmas
+- ✅ Filtros em cascata (Instituição → Curso → Disciplina → Turma)
+- ✅ Interface responsiva e moderna
+- ⏳ Sistema de notas (em desenvolvimento)
 
 ---
 
@@ -224,27 +329,56 @@ Verifica status da conexão com banco Oracle.
 ES-PI2-2025-T3-G10/
 ├── db/
 │   └── oracle/
-│       ├── schema.sql          # DDL do banco
-│       └── seed.sql            # Dados de teste
+│       ├── schema.sql              # DDL do banco (tabelas principais)
+│       ├── tokens_recuperacao.sql  # Tabela de tokens de recuperação
+│       └── seed.sql                # Dados de teste
 ├── src/
 │   ├── backend/
 │   │   ├── config/
-│   │   │   └── database.ts     # Configurações do Oracle
+│   │   │   └── database.ts         # Configurações do Oracle
 │   │   ├── database/
-│   │   │   └── connection.ts   # Pool de conexões
-│   │   └── routes/
-│   │       ├── auth.ts         # Rotas de autenticação
-│   │       └── pages/          # Rotas de páginas HTML (agregador index.ts)
-│   ├── screens/                # Telas HTML/CSS/JS
+│   │   │   └── connection.ts       # Pool de conexões
+│   │   ├── routes/
+│   │   │   ├── auth.ts             # Rotas de autenticação
+│   │   │   ├── api/
+│   │   │   │   ├── index.ts        # Agregador de rotas API
+│   │   │   │   ├── auth.ts         # API de autenticação
+│   │   │   │   ├── instituicoes.ts # API de instituições
+│   │   │   │   ├── cursos.ts       # API de cursos
+│   │   │   │   ├── disciplinas.ts  # API de disciplinas
+│   │   │   │   ├── turmas.ts       # API de turmas
+│   │   │   │   └── alunos.ts       # API de alunos
+│   │   │   └── pages/              # Rotas de páginas HTML
+│   │   │       ├── index.ts        # Agregador de páginas
+│   │   │       ├── login.ts
+│   │   │       ├── cadastro.ts
+│   │   │       ├── dashboard.ts
+│   │   │       ├── instituicoes.ts
+│   │   │       ├── cursos.ts
+│   │   │       ├── disciplinas.ts
+│   │   │       ├── turmas.ts
+│   │   │       ├── alunos.ts
+│   │   │       └── notas.ts
+│   │   └── services/
+│   │       └── email.ts            # Serviço de envio de e-mail
+│   ├── screens/                    # Telas HTML/CSS/JS (frontend)
 │   │   ├── Login/
 │   │   ├── Cadastro/
+│   │   ├── Dashboard/
 │   │   ├── Recuperacão Senha/
-│   │   └── Redefinir Senha/
-│   └── index.ts                # Ponto de entrada
-├── .env                        # Variáveis de ambiente (não commitar!)
-├── .env.example                # Exemplo de configuração
+│   │   ├── Redefinir Senha/
+│   │   ├── Instituicoes/
+│   │   ├── Cursos/
+│   │   ├── Disciplinas/
+│   │   ├── Turmas/
+│   │   ├── Alunos/
+│   │   └── Notas/
+│   └── index.ts                    # Ponto de entrada do servidor
+├── .env                            # Variáveis de ambiente (não commitar!)
+├── .env.example                    # Exemplo de configuração
 ├── package.json
 ├── tsconfig.json
+├── Documento.md                    # Documento de visão do projeto
 └── README.md
 ```
 
@@ -253,9 +387,26 @@ ES-PI2-2025-T3-G10/
 ## 🔒 Segurança
 
 - ✅ Variáveis sensíveis em arquivo `.env` (não versionado)
-- ✅ Pool de conexões Oracle
+- ✅ Pool de conexões Oracle com timeout configurado
 - ✅ Validação de entrada nos endpoints
+- ✅ Tokens de recuperação de senha com expiração (1 hora)
+- ✅ Limpeza automática de tokens expirados via trigger
+- ✅ Proteção contra SQL injection (uso de bind parameters)
 - ⚠️ **Nota:** Projeto simplificado para fins acadêmicos
+
+---
+
+## 📧 Configuração de E-mail (Gmail)
+
+Para a funcionalidade de recuperação de senha funcionar:
+
+1. Use uma conta Gmail
+2. Ative a **verificação em duas etapas**
+3. Gere uma **senha de app**:
+   - Acesse: https://myaccount.google.com/security
+   - Vá em "Senhas de app"
+   - Gere uma nova senha para "E-mail"
+   - Use essa senha no campo `EMAIL_PASS` do `.env`
 
 ---
 
@@ -264,10 +415,15 @@ ES-PI2-2025-T3-G10/
 ### Erro: "Pool de conexões não inicializado"
 - Certifique-se de que o arquivo `.env` está configurado corretamente
 - Verifique se a VPN da PUC está conectada
-- Teste a conexão com: `GET /api/auth/status`
+- Execute `npm run build` para compilar o TypeScript
+
+### Erro: "NJS-510: connection timeout"
+- Verifique se a VPN da PUC está ativa e conectada
+- Teste a conectividade: `Test-NetConnection -ComputerName 172.16.12.14 -Port 1521`
+- O timeout foi aumentado para 90 segundos no código
 
 ### Erro: "ORA-12541: TNS:no listener"
-- Verifique se o `ORACLE_HOST`, `ORACLE_PORT` e `ORACLE_SERVICE` estão corretos
+- Verifique se `ORACLE_HOST`, `ORACLE_PORT` e `ORACLE_SID` estão corretos no `.env`
 - Confirme que a VPN está conectada
 - Teste a conexão manual no SQL Developer
 
@@ -278,6 +434,12 @@ ES-PI2-2025-T3-G10/
 ### PowerShell bloqueia npm
 - Use `npm.cmd` em vez de `npm`
 - Ou ajuste a política: `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`
+
+### E-mail de recuperação não chega
+- Verifique se o `EMAIL_USER` e `EMAIL_PASS` estão corretos
+- Confirme que a senha de app do Gmail foi gerada corretamente
+- Verifique a pasta de spam do destinatário
+- Confira os logs do servidor para mensagens de erro
 
 ---
 
