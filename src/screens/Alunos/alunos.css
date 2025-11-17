@@ -267,6 +267,25 @@ header div {
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
+.form-group select:hover,
+.form-group input:hover:not([readonly]) {
+    border-color: var(--primary-light);
+}
+
+.form-group select {
+    outline: none;
+}
+
+.form-group select::-moz-focus-inner {
+    border: 0;
+}
+
+.form-group select:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 var(--text-primary);
+    outline: none;
+}
+
 .form-group input[readonly] {
     background-color: var(--bg-tertiary);
     cursor: not-allowed;
@@ -278,6 +297,18 @@ header div {
     padding: 1.5rem 2rem;
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border-color);
+}
+
+/* Grid de filtros */
+.filtros-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    align-items: end;
+}
+
+.filtros-grid .form-group:last-child {
+    margin-top: 1.5rem;
 }
 
 /* Tabela moderna e profissional */
@@ -382,7 +413,9 @@ tbody td:last-child {
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-xl);
     animation: modalSlideIn 0.3s ease-out;
-    overflow: hidden;
+    /* permitir scroll interno quando o conteúdo for maior que a viewport */
+    max-height: 80vh;
+    overflow: auto;
 }
 
 @keyframes modalSlideIn {
@@ -437,6 +470,11 @@ tbody td:last-child {
 .modal form,
 .modal-body {
     padding: 2rem;
+}
+
+/* Quando o modal de aluno estiver aberto queremos esconder o botão de vincular nas linhas */
+.hide-vincular .btn-vincular {
+    display: none !important;
 }
 
 .modal-body p {

@@ -1,18 +1,20 @@
 /**
  * Configurações do Banco de Dados Oracle
  * Autor: Rafael Leal
+ * 
+ * NOTA: O dotenv.config() é chamado no index.ts principal
  */
-
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 export const dbConfig = {
   user: process.env.ORACLE_USER || '',
   password: process.env.ORACLE_PASSWORD || '',
   connectString: `${process.env.ORACLE_HOST}:${process.env.ORACLE_PORT}/${process.env.ORACLE_SID}`,
   poolMin: 1,
-  poolMax: 5
+  poolMax: 10,
+  poolIncrement: 1,
+  poolTimeout: 60,
+  queueTimeout: 60000,
+  connectTimeout: 90
 };
 
 export function validateDatabaseConfig(): { valid: boolean; errors: string[] } {

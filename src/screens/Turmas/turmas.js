@@ -2,16 +2,23 @@
  * Autor: Rafael Leal
  */
 
+// URL da API
 const API_URL = 'http://localhost:5000/api';
+
+// Variáveis para armazenar listas e estado
+let instituicoes = [];
+let cursos = [];
 let disciplinas = [];
 let turmas = [];
+let instituicaoSelecionada = null;
+let cursoSelecionado = null;
 let disciplinaSelecionada = null;
 let turmaEditando = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     const usuarioId = localStorage.getItem('usuarioId');
     if (!usuarioId) { window.location.href = '/login'; return; }
-    carregarDisciplinas();
+    carregarInstituicoes();
     configurarEventos();
 });
 
@@ -24,6 +31,47 @@ function configurarEventos() {
         if (confirm('Deseja realmente sair?')) {
             localStorage.removeItem('usuarioId');
             window.location.href = '/login';
+        }
+    });
+
+    document.getElementById('selectInstituicao').addEventListener('change', (e) => {
+        const instituicaoId = e.target.value;
+        const selectCurso = document.getElementById('selectCurso');
+        const selectDisc = document.getElementById('selectDisciplina');
+        if (instituicaoId) {
+            instituicaoSelecionada = instituicoes.find(i => i.id == instituicaoId);
+            carregarCursos(instituicaoId);
+            selectCurso.disabled = false;
+            selectDisc.disabled = true;
+            selectDisc.innerHTML = '<option value="">Selecione um curso primeiro...</option>';
+            document.getElementById('btnNovaTurma').disabled = true;
+            limparTabela();
+        } else {
+            instituicaoSelecionada = null;
+            cursos = [];
+            preencherSelectCursos();
+            selectCurso.disabled = true;
+            selectDisc.disabled = true;
+            selectDisc.innerHTML = '<option value="">Selecione um curso primeiro...</option>';
+            document.getElementById('btnNovaTurma').disabled = true;
+            limparTabela();
+        }
+    });
+
+    document.getElementById('selectCurso').addEventListener('change', (e) => {
+        const cursoId = e.target.value;
+        const selectDisc = document.getElementById('selectDisciplina');
+        if (cursoId) {
+            cursoSelecionado = cursos.find(c => c.id == cursoId);
+            carregarDisciplinas(cursoId);
+            selectDisc.disabled = false;
+        } else {
+            cursoSelecionado = null;
+            disciplinas = [];
+            preencherSelectDisciplinas();
+            selectDisc.disabled = true;
+            document.getElementById('btnNovaTurma').disabled = true;
+            limparTabela();
         }
     });
 
@@ -61,10 +109,68 @@ function configurarEventos() {
     });
 }
 
-async function carregarDisciplinas() {
+async function carregarInstituicoes() {
     try {
         const usuarioId = localStorage.getItem('usuarioId');
-        const response = await fetch(`${API_URL}/disciplinas?usuario_id=${usuarioId}`);
+        const response = await fetch(`${API_URL}/instituicoes?usuario_id=${usuarioId}`);
+        const data = await response.json();
+
+        if (data.sucesso) {
+            instituicoes = data.dados;
+            preencherSelectInstituicoes();
+        } else {
+            alert('Erro ao carregar instituições: ' + data.mensagem);
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao conectar com o servidor');
+    }
+}
+
+function preencherSelectInstituicoes() {
+    const select = document.getElementById('selectInstituicao');
+    select.innerHTML = '<option value="">Selecione uma instituição...</option>';
+    instituicoes.forEach(inst => {
+        const option = document.createElement('option');
+        option.value = (inst.id || inst.ID);
+        option.textContent = (inst.nome || inst.NOME || '-');
+        select.appendChild(option);
+    });
+}
+
+async function carregarCursos(instituicaoId) {
+    try {
+        const usuarioId = localStorage.getItem('usuarioId');
+        const response = await fetch(`${API_URL}/cursos?instituicao_id=${instituicaoId}&usuario_id=${usuarioId}`);
+        const data = await response.json();
+
+        if (data.sucesso) {
+            cursos = data.dados;
+            preencherSelectCursos();
+        } else {
+            alert('Erro ao carregar cursos: ' + data.mensagem);
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao conectar com o servidor');
+    }
+}
+
+function preencherSelectCursos() {
+    const select = document.getElementById('selectCurso');
+    select.innerHTML = '<option value="">Selecione um curso...</option>';
+    cursos.forEach(curso => {
+        const option = document.createElement('option');
+        option.value = (curso.id || curso.ID);
+        option.textContent = `${(curso.nome || curso.NOME || '-')}`;
+        select.appendChild(option);
+    });
+}
+
+async function carregarDisciplinas(cursoId) {
+    try {
+        const usuarioId = localStorage.getItem('usuarioId');
+        const response = await fetch(`${API_URL}/disciplinas?curso_id=${cursoId}&usuario_id=${usuarioId}`);
         const data = await response.json();
 
         if (data.sucesso) {
@@ -86,11 +192,12 @@ function preencherSelectDisciplinas() {
     disciplinas.forEach(disciplina => {
         const option = document.createElement('option');
         option.value = (disciplina.id || disciplina.ID);
-        option.textContent = `${(disciplina.nome || disciplina.NOME || '-')}${(disciplina.curso_nome || disciplina.CURSO_NOME) ? ' - ' + (disciplina.curso_nome || disciplina.CURSO_NOME) : ''}`;
+        option.textContent = `${(disciplina.nome || disciplina.NOME || '-')}`;
         select.appendChild(option);
     });
 }
 
+// Busca as turmas da disciplina selecionada
 async function carregarTurmas(disciplinaId) {
     try {
         const usuarioId = localStorage.getItem('usuarioId');
@@ -109,6 +216,7 @@ async function carregarTurmas(disciplinaId) {
     }
 }
 
+// Exibe as turmas na tabela
 function renderizarTabela() {
     const tbody = document.getElementById('listaTurmas');
 
@@ -141,7 +249,7 @@ function limparTabela() {
     const tbody = document.getElementById('listaTurmas');
     tbody.innerHTML = `
         <tr class="sem-dados">
-            <td colspan="3">Selecione uma disciplina para visualizar as turmas</td>
+            <td colspan="3">Selecione uma instituição, um curso e uma disciplina para visualizar as turmas</td>
         </tr>
     `;
 }

@@ -1,3 +1,12 @@
+/**
+ * Autor: Rafael Leal
+ */
+
+import dotenv from 'dotenv';
+
+// IMPORTANTE: Carregar variáveis de ambiente ANTES de tudo
+dotenv.config();
+
 import express from 'express';
 import path from 'path';
 import { registerPageRoutes } from './backend/routes/pages/index';

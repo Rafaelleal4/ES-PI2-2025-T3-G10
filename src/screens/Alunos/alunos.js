@@ -2,18 +2,21 @@
  * Autor: Rafael Leal
  */
 
+// URL da API
 const API_URL = 'http://localhost:5000/api';
+
+// Variáveis para armazenar dados
 let alunos = [];
 let disciplinas = [];
 let turmas = [];
 let alunoEditando = null;
 let alunoVinculando = null;
 
+// Executa ao carregar a página
 document.addEventListener('DOMContentLoaded', () => {
     const usuarioId = localStorage.getItem('usuarioId');
     if (!usuarioId) { window.location.href = '/login'; return; }
-    carregarAlunos();
-    carregarDisciplinas();
+    carregarInstituicoes();
     configurarEventos();
 });
 
@@ -37,6 +40,134 @@ function configurarEventos() {
     document.getElementById('btnCancelarVincular').addEventListener('click', fecharModalVincular);
     
     document.getElementById('selectDisciplina').addEventListener('change', carregarTurmasPorDisciplina);
+    // Listeners para selects do modal de criação/edição
+    const modalInstituicaoEl = document.getElementById('modalInstituicao');
+    if (modalInstituicaoEl) {
+        modalInstituicaoEl.addEventListener('change', async (e) => {
+            const instituicaoId = e.target.value;
+            const modalCurso = document.getElementById('modalCurso');
+            const modalDisc = document.getElementById('modalDisciplina');
+            const modalTurma = document.getElementById('modalTurma');
+
+            if (!instituicaoId) {
+                modalCurso.innerHTML = '<option value="">Selecione uma instituição primeiro...</option>';
+                modalCurso.disabled = true;
+                modalDisc.innerHTML = '<option value="">Selecione um curso primeiro...</option>';
+                modalDisc.disabled = true;
+                modalTurma.innerHTML = '<option value="">Selecione uma disciplina primeiro...</option>';
+                modalTurma.disabled = true;
+                return;
+            }
+
+            await carregarCursosModal(instituicaoId);
+        });
+    }
+
+    const modalCursoEl = document.getElementById('modalCurso');
+    if (modalCursoEl) {
+        modalCursoEl.addEventListener('change', async (e) => {
+            const cursoId = e.target.value;
+            const modalDisc = document.getElementById('modalDisciplina');
+            const modalTurma = document.getElementById('modalTurma');
+
+            if (!cursoId) {
+                modalDisc.innerHTML = '<option value="">Selecione um curso primeiro...</option>';
+                modalDisc.disabled = true;
+                modalTurma.innerHTML = '<option value="">Selecione uma disciplina primeiro...</option>';
+                modalTurma.disabled = true;
+                return;
+            }
+
+            await carregarDisciplinasModal(cursoId);
+        });
+    }
+
+    const modalDiscEl = document.getElementById('modalDisciplina');
+    if (modalDiscEl) {
+        modalDiscEl.addEventListener('change', async (e) => {
+            const disciplinaId = e.target.value;
+            const modalTurma = document.getElementById('modalTurma');
+            if (!disciplinaId) {
+                modalTurma.innerHTML = '<option value="">Selecione uma disciplina primeiro...</option>';
+                modalTurma.disabled = true;
+                return;
+            }
+            await carregarTurmasModal(disciplinaId);
+        });
+    }
+    
+    // Listener para filtro de instituição - carrega cursos quando selecionada
+    document.getElementById('filterInstituicao').addEventListener('change', async (e) => {
+        const instituicaoId = e.target.value;
+        const filterCurso = document.getElementById('filterCurso');
+        const filterDisc = document.getElementById('filterDisciplina');
+        const filterTurma = document.getElementById('filterTurma');
+
+        if (!instituicaoId) {
+            filterCurso.innerHTML = '<option value="">Selecione uma instituição primeiro...</option>';
+            filterCurso.disabled = true;
+            filterDisc.innerHTML = '<option value="">Selecione um curso primeiro...</option>';
+            filterDisc.disabled = true;
+            filterTurma.innerHTML = '<option value="">Selecione uma disciplina primeiro...</option>';
+            filterTurma.disabled = true;
+            mostrarMensagemSelecione();
+            return;
+        }
+
+        await carregarCursosFilter(instituicaoId);
+    });
+
+    document.getElementById('filterCurso').addEventListener('change', async (e) => {
+        const cursoId = e.target.value;
+        const filterDisc = document.getElementById('filterDisciplina');
+        const filterTurma = document.getElementById('filterTurma');
+
+        if (!cursoId) {
+            filterDisc.innerHTML = '<option value="">Selecione um curso primeiro...</option>';
+            filterDisc.disabled = true;
+            filterTurma.innerHTML = '<option value="">Selecione uma disciplina primeiro...</option>';
+            filterTurma.disabled = true;
+            mostrarMensagemSelecione();
+            return;
+        }
+
+        await carregarDisciplinasPorCurso(cursoId);
+    });
+    // event listeners para filtros
+    document.getElementById('filterDisciplina').addEventListener('change', async (e) => {
+        const disciplinaId = e.target.value;
+        const filterTurma = document.getElementById('filterTurma');
+        if (!disciplinaId) {
+            filterTurma.innerHTML = '<option value="">Selecione uma disciplina primeiro...</option>';
+            filterTurma.disabled = true;
+            mostrarMensagemSelecione();
+            return;
+        }
+        await carregarTurmasFilter(disciplinaId);
+    });
+
+    document.getElementById('filterTurma').addEventListener('change', async (e) => {
+        const turmaId = e.target.value;
+        if (!turmaId) {
+            carregarAlunos();
+            return;
+        }
+        await carregarAlunosPorTurma(turmaId);
+    });
+
+    document.getElementById('btnLimparFiltro').addEventListener('click', () => {
+        document.getElementById('filterInstituicao').value = '';
+        const filterCurso = document.getElementById('filterCurso');
+        const filterDisc = document.getElementById('filterDisciplina');
+        const filterTurma = document.getElementById('filterTurma');
+        filterCurso.innerHTML = '<option value="">Selecione uma instituição primeiro...</option>';
+        filterCurso.disabled = true;
+        filterDisc.innerHTML = '<option value="">Selecione um curso primeiro...</option>';
+        filterDisc.disabled = true;
+        filterTurma.innerHTML = '<option value="">Selecione uma disciplina primeiro...</option>';
+        filterTurma.disabled = true;
+        mostrarMensagemSelecione();
+    });
     
     document.getElementById('btnCancelarExclusao').addEventListener('click', fecharModalConfirmacao);
     document.getElementById('btnConfirmarExclusao').addEventListener('click', confirmarExclusao);
@@ -46,11 +177,13 @@ function configurarEventos() {
         const closeBtn = modal.querySelector('.close');
         closeBtn.addEventListener('click', () => {
             modal.style.display = 'none';
+            if (modal.id === 'modalAluno') document.body.classList.remove('hide-vincular');
         });
 
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
                 modal.style.display = 'none';
+                if (modal.id === 'modalAluno') document.body.classList.remove('hide-vincular');
             }
         });
     });
@@ -58,16 +191,8 @@ function configurarEventos() {
 
 async function carregarAlunos() {
     try {
-        const usuarioId = localStorage.getItem('usuarioId');
-        const response = await fetch(`${API_URL}/alunos?usuario_id=${usuarioId}`);
-        const data = await response.json();
-
-        if (data.sucesso) {
-            alunos = data.dados;
-            renderizarTabela();
-        } else {
-            alert('Erro ao carregar alunos: ' + data.mensagem);
-        }
+        // Não usar carregamento global — alunos só são mostrados quando uma turma for selecionada
+        return;
     } catch (error) {
         console.error('Erro:', error);
         alert('Erro ao conectar com o servidor');
@@ -76,17 +201,291 @@ async function carregarAlunos() {
 
 async function carregarDisciplinas() {
     try {
+        // Mantido para compatibilidade; prefira carregar por curso com carregarDisciplinasPorCurso
         const usuarioId = localStorage.getItem('usuarioId');
         const response = await fetch(`${API_URL}/disciplinas?usuario_id=${usuarioId}`);
         const data = await response.json();
 
         if (data.sucesso) {
             disciplinas = data.dados;
+            preencherSelectFiltroDisciplinas();
         } else {
             console.error('Erro ao carregar disciplinas:', data.mensagem);
         }
     } catch (error) {
         console.error('Erro:', error);
+    }
+}
+
+// --- helpers para modal ---
+async function carregarCursosModal(instituicaoId) {
+    try {
+        const usuarioId = localStorage.getItem('usuarioId');
+        const response = await fetch(`${API_URL}/cursos?instituicao_id=${instituicaoId}&usuario_id=${usuarioId}`);
+        const data = await response.json();
+
+        const select = document.getElementById('modalCurso');
+        const selectDisc = document.getElementById('modalDisciplina');
+        const selectTurma = document.getElementById('modalTurma');
+
+        if (data.sucesso) {
+            select.innerHTML = '<option value="">Selecione um curso...</option>';
+            data.dados.forEach(c => {
+                const option = document.createElement('option');
+                option.value = (c.id || c.ID);
+                option.textContent = (c.nome || c.NOME || '-');
+                select.appendChild(option);
+            });
+            select.disabled = false;
+            selectDisc.innerHTML = '<option value="">Selecione um curso primeiro...</option>';
+            selectDisc.disabled = true;
+            selectTurma.innerHTML = '<option value="">Selecione uma disciplina primeiro...</option>';
+            selectTurma.disabled = true;
+        } else {
+            alert('Erro ao carregar cursos: ' + data.mensagem);
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao conectar com o servidor');
+    }
+}
+
+async function carregarDisciplinasModal(cursoId) {
+    try {
+        const usuarioId = localStorage.getItem('usuarioId');
+        const response = await fetch(`${API_URL}/disciplinas?curso_id=${cursoId}&usuario_id=${usuarioId}`);
+        const data = await response.json();
+
+        const select = document.getElementById('modalDisciplina');
+        const selectTurma = document.getElementById('modalTurma');
+
+        if (data.sucesso) {
+            select.innerHTML = '<option value="">Selecione uma disciplina...</option>';
+            (data.dados || []).forEach(d => {
+                const option = document.createElement('option');
+                option.value = (d.id || d.ID);
+                option.textContent = (d.nome || d.NOME || '-');
+                select.appendChild(option);
+            });
+            select.disabled = false;
+            selectTurma.innerHTML = '<option value="">Selecione uma disciplina primeiro...</option>';
+            selectTurma.disabled = true;
+        } else {
+            alert('Erro ao carregar disciplinas: ' + data.mensagem);
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao conectar com o servidor');
+    }
+}
+
+async function carregarTurmasModal(disciplinaId) {
+    try {
+        const usuarioId = localStorage.getItem('usuarioId');
+        const response = await fetch(`${API_URL}/turmas?disciplina_id=${disciplinaId}&usuario_id=${usuarioId}`);
+        const data = await response.json();
+
+        const selectTurma = document.getElementById('modalTurma');
+        if (data.sucesso) {
+            const turmasModal = data.dados || [];
+            selectTurma.innerHTML = '<option value="">Selecione uma turma...</option>';
+            turmasModal.forEach(t => {
+                const option = document.createElement('option');
+                option.value = (t.id || t.ID);
+                option.textContent = (t.nome || t.NOME || '-');
+                selectTurma.appendChild(option);
+            });
+            selectTurma.disabled = false;
+        } else {
+            alert('Erro ao carregar turmas para modal: ' + data.mensagem);
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao conectar com o servidor');
+    }
+}
+
+function preencherSelectFiltroDisciplinas() {
+    const select = document.getElementById('filterDisciplina');
+    select.innerHTML = '<option value="">Todas as disciplinas</option>';
+    disciplinas.forEach(d => {
+        const option = document.createElement('option');
+        option.value = (d.id || d.ID);
+        option.textContent = `${(d.nome || d.NOME || '-')}${(d.curso_nome || d.CURSO_NOME) ? ' - ' + (d.curso_nome || d.CURSO_NOME) : ''}`;
+        select.appendChild(option);
+    });
+}
+
+// --- INSTITUIÇÕES / CURSOS / DISCIPLINAS helpers para os filtros ---
+// Carrega as instituições para o filtro
+async function carregarInstituicoes() {
+    try {
+        const usuarioId = localStorage.getItem('usuarioId');
+        const response = await fetch(`${API_URL}/instituicoes?usuario_id=${usuarioId}`);
+        const data = await response.json();
+        console.log('carregarInstituicoes response', data);
+
+        const select = document.getElementById('filterInstituicao');
+        select.innerHTML = '<option value="">Selecione uma instituição...</option>';
+
+        if (data.sucesso && Array.isArray(data.dados) && data.dados.length > 0) {
+            data.dados.forEach(i => {
+                const option = document.createElement('option');
+                option.value = (i.id || i.ID);
+                option.textContent = (i.nome || i.NOME || '-');
+                select.appendChild(option);
+            });
+            // preenche também o select do modal, se existir
+            const modalSelect = document.getElementById('modalInstituicao');
+            if (modalSelect) {
+                modalSelect.innerHTML = '<option value="">Selecione uma instituição...</option>';
+                data.dados.forEach(i => {
+                    const option = document.createElement('option');
+                    option.value = (i.id || i.ID);
+                    option.textContent = (i.nome || i.NOME || '-');
+                    modalSelect.appendChild(option);
+                });
+                modalSelect.disabled = false;
+            }
+        } else {
+            console.warn('Nenhuma instituição encontrada ou erro:', data.mensagem);
+            select.innerHTML = '<option value="">Nenhuma instituição encontrada</option>';
+            select.disabled = true;
+            const modalSelect = document.getElementById('modalInstituicao');
+            if (modalSelect) {
+                modalSelect.innerHTML = '<option value="">Nenhuma instituição encontrada</option>';
+                modalSelect.disabled = true;
+            }
+            // garantir que outros filtros estejam desabilitados
+            document.getElementById('filterCurso').innerHTML = '<option value="">Selecione uma instituição primeiro...</option>';
+            document.getElementById('filterCurso').disabled = true;
+            document.getElementById('filterDisciplina').innerHTML = '<option value="">Selecione um curso primeiro...</option>';
+            document.getElementById('filterDisciplina').disabled = true;
+            document.getElementById('filterTurma').innerHTML = '<option value="">Selecione uma disciplina primeiro...</option>';
+            document.getElementById('filterTurma').disabled = true;
+            mostrarMensagemSelecione();
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+    }
+}
+
+// Carrega cursos da instituição selecionada
+async function carregarCursosFilter(instituicaoId) {
+    try {
+        const usuarioId = localStorage.getItem('usuarioId');
+        const response = await fetch(`${API_URL}/cursos?instituicao_id=${instituicaoId}&usuario_id=${usuarioId}`);
+        const data = await response.json();
+
+        const select = document.getElementById('filterCurso');
+        const selectDisc = document.getElementById('filterDisciplina');
+        const selectTurma = document.getElementById('filterTurma');
+
+        if (data.sucesso) {
+            select.innerHTML = '<option value="">Selecione um curso...</option>';
+            data.dados.forEach(c => {
+                const option = document.createElement('option');
+                option.value = (c.id || c.ID);
+                option.textContent = (c.nome || c.NOME || '-');
+                select.appendChild(option);
+            });
+            select.disabled = false;
+            selectDisc.innerHTML = '<option value="">Selecione um curso primeiro...</option>';
+            selectDisc.disabled = true;
+            selectTurma.innerHTML = '<option value="">Selecione uma disciplina primeiro...</option>';
+            selectTurma.disabled = true;
+            mostrarMensagemSelecione();
+        } else {
+            alert('Erro ao carregar cursos: ' + data.mensagem);
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao conectar com o servidor');
+    }
+}
+
+// Carrega disciplinas do curso selecionado
+async function carregarDisciplinasPorCurso(cursoId) {
+    try {
+        const usuarioId = localStorage.getItem('usuarioId');
+        const response = await fetch(`${API_URL}/disciplinas?curso_id=${cursoId}&usuario_id=${usuarioId}`);
+        const data = await response.json();
+
+        const select = document.getElementById('filterDisciplina');
+        const selectTurma = document.getElementById('filterTurma');
+
+        if (data.sucesso) {
+            select.innerHTML = '<option value="">Selecione uma disciplina...</option>';
+            (data.dados || []).forEach(d => {
+                const option = document.createElement('option');
+                option.value = (d.id || d.ID);
+                option.textContent = (d.nome || d.NOME || '-');
+                select.appendChild(option);
+            });
+            select.disabled = false;
+            selectTurma.innerHTML = '<option value="">Selecione uma disciplina primeiro...</option>';
+            selectTurma.disabled = true;
+            mostrarMensagemSelecione();
+        } else {
+            alert('Erro ao carregar disciplinas: ' + data.mensagem);
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao conectar com o servidor');
+    }
+}
+
+function mostrarMensagemSelecione() {
+    const tbody = document.getElementById('listaAlunos');
+    tbody.innerHTML = `
+        <tr class="sem-dados">
+            <td colspan="3">Selecione Instituição, Curso, Disciplina e Turma para visualizar os alunos</td>
+        </tr>
+    `;
+}
+
+async function carregarTurmasFilter(disciplinaId) {
+    try {
+        const usuarioId = localStorage.getItem('usuarioId');
+        const response = await fetch(`${API_URL}/turmas?disciplina_id=${disciplinaId}&usuario_id=${usuarioId}`);
+        const data = await response.json();
+
+        const selectTurma = document.getElementById('filterTurma');
+        if (data.sucesso) {
+            const turmasFilter = data.dados || [];
+            selectTurma.innerHTML = '<option value="">Selecione uma turma...</option>';
+            turmasFilter.forEach(t => {
+                const option = document.createElement('option');
+                option.value = (t.id || t.ID);
+                option.textContent = (t.nome || t.NOME || '-');
+                selectTurma.appendChild(option);
+            });
+            selectTurma.disabled = false;
+        } else {
+            alert('Erro ao carregar turmas para filtro: ' + data.mensagem);
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao conectar com o servidor');
+    }
+}
+
+// Busca os alunos de uma turma específica
+async function carregarAlunosPorTurma(turmaId) {
+    try {
+        const usuarioId = localStorage.getItem('usuarioId');
+        const response = await fetch(`${API_URL}/turmas/${turmaId}/alunos?usuario_id=${usuarioId}`);
+        const data = await response.json();
+
+        if (data.sucesso) {
+            alunos = data.dados;
+            renderizarTabela();
+        } else {
+            alert('Erro ao carregar alunos da turma: ' + data.mensagem);
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao conectar com o servidor');
     }
 }
 
@@ -144,9 +543,6 @@ function renderizarTabela() {
                 <button class="btn-icon btn-editar" onclick="editarAluno(${aluno.id || aluno.ID})">
                     ✏️ Editar
                 </button>
-                <button class="btn-icon btn-vincular" onclick="abrirModalVincularAluno(${aluno.id || aluno.ID}, '${(aluno.nome || aluno.NOME || '').replace(/'/g, "\\'")}')">
-                    🔗 Vincular
-                </button>
                 <button class="btn-icon btn-excluir" onclick="excluirAluno(${aluno.id || aluno.ID}, '${(aluno.nome || aluno.NOME || '').replace(/'/g, "\\'")}')">
                     🗑️ Excluir
                 </button>
@@ -155,12 +551,40 @@ function renderizarTabela() {
     `).join('');
 }
 
+// Atualiza chamadas que recarregam a lista para respeitar filtro ativo
+function recarregarAlunosAposOperacao() {
+    const turmaFilter = document.getElementById('filterTurma').value;
+    if (turmaFilter) {
+        carregarAlunosPorTurma(turmaFilter);
+    } else {
+        mostrarMensagemSelecione();
+    }
+}
+
 function abrirModalNovo() {
     alunoEditando = null;
     document.getElementById('modalTitulo').textContent = 'Novo Aluno';
     document.getElementById('alunoId').value = '';
     document.getElementById('inputIdentificador').value = '';
     document.getElementById('inputNome').value = '';
+    // reset selects do modal
+    const modalInst = document.getElementById('modalInstituicao');
+    const modalCurso = document.getElementById('modalCurso');
+    const modalDisc = document.getElementById('modalDisciplina');
+    const modalTurma = document.getElementById('modalTurma');
+    if (modalInst) modalInst.value = '';
+    if (modalCurso) {
+        modalCurso.innerHTML = '<option value="">Selecione uma instituição primeiro...</option>';
+        modalCurso.disabled = true;
+    }
+    if (modalDisc) {
+        modalDisc.innerHTML = '<option value="">Selecione um curso primeiro...</option>';
+        modalDisc.disabled = true;
+    }
+    if (modalTurma) {
+        modalTurma.innerHTML = '<option value="">Selecione uma disciplina primeiro...</option>';
+        modalTurma.disabled = true;
+    }
     document.getElementById('modalAluno').style.display = 'block';
 }
 
@@ -172,6 +596,26 @@ function editarAluno(id) {
     document.getElementById('alunoId').value = (alunoEditando.id || alunoEditando.ID);
     document.getElementById('inputIdentificador').value = (alunoEditando.identificador || alunoEditando.IDENTIFICADOR || '');
     document.getElementById('inputNome').value = (alunoEditando.nome || alunoEditando.NOME || '');
+    // Ao editar, não forçar seleção de instituição/curso/disciplinas (opcional)
+    const modalInst = document.getElementById('modalInstituicao');
+    const modalCurso = document.getElementById('modalCurso');
+    const modalDisc = document.getElementById('modalDisciplina');
+    const modalTurma = document.getElementById('modalTurma');
+    if (modalInst) modalInst.value = '';
+    if (modalCurso) {
+        modalCurso.innerHTML = '<option value="">Selecione uma instituição primeiro...</option>';
+        modalCurso.disabled = true;
+    }
+    if (modalDisc) {
+        modalDisc.innerHTML = '<option value="">Selecione um curso primeiro...</option>';
+        modalDisc.disabled = true;
+    }
+    if (modalTurma) {
+        modalTurma.innerHTML = '<option value="">Selecione uma disciplina primeiro...</option>';
+        modalTurma.disabled = true;
+    }
+    // ao abrir modal de edição/visualização, escondemos os botões de vincular na lista
+    document.body.classList.add('hide-vincular');
     document.getElementById('modalAluno').style.display = 'block';
 }
 
@@ -185,6 +629,32 @@ async function salvarAluno(e) {
     if (!identificador || !nome) {
         alert('Por favor, preencha todos os campos');
         return;
+    }
+
+    // Ao criar novo aluno, exigir seleção de instituição, curso, disciplina e turma
+    const isCreating = !id;
+    const modalInstituicao = document.getElementById('modalInstituicao');
+    const modalCurso = document.getElementById('modalCurso');
+    const modalDisciplina = document.getElementById('modalDisciplina');
+    const modalTurma = document.getElementById('modalTurma');
+
+    if (isCreating) {
+        if (!modalInstituicao || !modalInstituicao.value) {
+            alert('Por favor, selecione a instituição');
+            return;
+        }
+        if (!modalCurso || !modalCurso.value) {
+            alert('Por favor, selecione o curso');
+            return;
+        }
+        if (!modalDisciplina || !modalDisciplina.value) {
+            alert('Por favor, selecione a disciplina');
+            return;
+        }
+        if (!modalTurma || !modalTurma.value) {
+            alert('Por favor, selecione a turma');
+            return;
+        }
     }
 
     const dados = {
@@ -208,9 +678,34 @@ async function salvarAluno(e) {
         const data = await response.json();
 
         if (data.sucesso) {
+            // Se for criação, vincular o aluno à turma selecionada no modal
+            if (isCreating) {
+                const novoId = data.dados?.id;
+                const turmaId = parseInt(modalTurma.value);
+                const vincularBody = {
+                    turma_id: turmaId,
+                    usuario_id: Number(localStorage.getItem('usuarioId'))
+                };
+
+                try {
+                    const respV = await fetch(`${API_URL}/alunos/${novoId}/vincular-turma`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(vincularBody)
+                    });
+                    const dataV = await respV.json();
+                    if (!dataV.sucesso) {
+                        alert('Aluno criado, mas falha ao vincular turma: ' + dataV.mensagem);
+                    }
+                } catch (err) {
+                    console.error('Erro ao vincular turma:', err);
+                    alert('Aluno criado, mas falha ao vincular turma (erro de conexão)');
+                }
+            }
+
             alert(data.mensagem);
             fecharModal();
-            carregarAlunos();
+            recarregarAlunosAposOperacao();
         } else {
             alert('Erro: ' + data.mensagem);
         }
@@ -240,6 +735,7 @@ function abrirModalVincularAluno(id, nome) {
     document.getElementById('modalVincular').style.display = 'block';
 }
 
+// Vincula um aluno a uma turma
 async function vincularAluno(e) {
     e.preventDefault();
 
@@ -270,6 +766,7 @@ async function vincularAluno(e) {
         if (data.sucesso) {
             alert(data.mensagem);
             fecharModalVincular();
+            recarregarAlunosAposOperacao();
         } else {
             alert('Erro: ' + data.mensagem);
         }
@@ -299,7 +796,7 @@ async function confirmarExclusao() {
         if (data.sucesso) {
             alert(data.mensagem);
             fecharModalConfirmacao();
-            carregarAlunos();
+            recarregarAlunosAposOperacao();
         } else {
             alert('Erro: ' + data.mensagem);
         }
@@ -311,6 +808,8 @@ async function confirmarExclusao() {
 
 function fecharModal() {
     document.getElementById('modalAluno').style.display = 'none';
+    // restaurar visibilidade dos botões de vincular
+    document.body.classList.remove('hide-vincular');
     alunoEditando = null;
 }
 

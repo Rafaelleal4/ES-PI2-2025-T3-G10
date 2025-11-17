@@ -148,7 +148,8 @@ router.get('/', async (req: Request, res: Response) => {
 
     let query = `
       SELECT d.id, d.curso_id, d.codigo, d.nome, d.sigla, d.periodo, d.criado_em,
-             c.nome AS curso_nome
+             c.nome AS curso_nome,
+             i.nome AS instituicao_nome
       FROM disciplinas d
       INNER JOIN cursos c ON d.curso_id = c.id
       INNER JOIN instituicoes i ON c.instituicao_id = i.id
@@ -173,7 +174,8 @@ router.get('/', async (req: Request, res: Response) => {
       sigla: row.SIGLA,
       periodo: row.PERIODO,
       criado_em: row.CRIADO_EM,
-      curso_nome: row.CURSO_NOME
+      curso_nome: row.CURSO_NOME,
+      instituicao_nome: row.INSTITUICAO_NOME
     })) || [];
 
     return res.status(200).json({

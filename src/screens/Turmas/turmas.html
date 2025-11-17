@@ -1,3 +1,4 @@
+<!-- Autor: Rafael Leal -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -17,11 +18,25 @@
         </header>
 
         <div class="filtros">
-            <div class="form-group">
-                <label for="selectDisciplina">Disciplina:</label>
-                <select id="selectDisciplina" required>
-                    <option value="">Selecione uma disciplina...</option>
-                </select>
+            <div class="filtros-grid">
+                <div class="form-group">
+                    <label for="selectInstituicao">Instituição:</label>
+                    <select id="selectInstituicao" required>
+                        <option value="">Selecione uma instituição...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="selectCurso">Curso:</label>
+                    <select id="selectCurso" required disabled>
+                        <option value="">Selecione uma instituição primeiro...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="selectDisciplina">Disciplina:</label>
+                    <select id="selectDisciplina" required disabled>
+                        <option value="">Selecione um curso primeiro...</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -42,7 +57,7 @@
                 </thead>
                 <tbody id="listaTurmas">
                     <tr class="sem-dados">
-                        <td colspan="3">Selecione uma disciplina para visualizar as turmas</td>
+                        <td colspan="3">Selecione uma instituição, um curso e uma disciplina para visualizar as turmas</td>
                     </tr>
                 </tbody>
             </table>

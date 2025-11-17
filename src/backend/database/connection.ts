@@ -19,8 +19,14 @@ export async function initializeDatabase(): Promise<void> {
     }
 
     console.log('Conectando ao Oracle...');
+    console.log('Connection string:', dbConfig.connectString);
     pool = await oracledb.createPool(dbConfig);
     console.log('✅ Conectado com sucesso!');
+    
+    // Teste de conexão
+    const conn = await pool.getConnection();
+    await conn.close();
+    console.log('✅ Teste de conexão bem-sucedido!');
   } catch (error) {
     console.error('Erro ao conectar:', error);
     throw error;
