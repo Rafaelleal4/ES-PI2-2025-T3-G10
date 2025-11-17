@@ -1,26 +1,31 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Alunos</title>
-  <link rel="stylesheet" href="/alunos/alunos.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alunos</title>
+  <link rel="stylesheet" href="/alunos/alunos.css" />
 </head>
 <body>
-  <header class="topbar">
-    <h1>Alunos</h1>
-    <nav>
-      <a href="/dashboard">Dashboard</a>
-      <a href="/login">Sair</a>
-    </nav>
-  </header>
-  <main class="container">
-    <section class="card">
-      <h2>Gerenciar Alunos</h2>
-      <p>Página em construção. Em breve você poderá cadastrar e gerenciar seus alunos.</p>
-      <a href="/dashboard" class="btn">Voltar ao Dashboard</a>
-    </section>
-  </main>
-  <script src="/alunos/alunos.js"></script>
+  <header class="topbar">
+    <h1>Alunos</h1>
+    <nav>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/login">Sair</a>
+    </nav>
+  </header>
+  <main class="container">
+    <section class="card">
+      <h2>Gerenciar Alunos</h2>
+      <p>Aqui você poderá cadastrar, editar, excluir e importar seus alunos.</p>
+
+           <div class="action-buttons">
+      <a href="/alunos/novo" class="btn btn-primary">Adicionar Novo Aluno</a>
+      <a href="/importar" class="btn btn-secondary">Importar Alunos (.CSV)</a>
+      <a href="/dashboard" class="btn btn-tertiary">Voltar ao Dashboard</a>
+</div>
+    </section>
+  </main>
+  <script src="/alunos/alunos.js"></script>
 </body>
 </html>
