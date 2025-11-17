@@ -3,24 +3,49 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Notas</title>
-  <link rel="stylesheet" href="/notas/notas.css" />
-</head>
+  <title>Gerenciar Notas - NotaDez</title>
+  
+  <link rel="stylesheet" href="/cursos/cursos.css" />
+  
+  </head>
 <body>
-  <header class="topbar">
-    <h1>Notas</h1>
-    <nav>
-      <a href="/dashboard">Dashboard</a>
-      <a href="/login">Sair</a>
-    </nav>
-  </header>
-  <main class="container">
-    <section class="card">
-      <h2>Gerenciar Notas</h2>
-      <p>Página em construção. Em breve você poderá cadastrar e gerenciar suas notas.</p>
-      <a href="/dashboard" class="btn">Voltar ao Dashboard</a>
-    </section>
-  </main>
+
+  <div class="container">
+    <header>
+      <h1>Gerenciar Notas</h1>
+      <div>
+        <button id="btnDashboard" class="btn-secondary">Dashboard</button>
+        <button id="btnSair" class="btn-secondary">Sair</button>
+      </div>
+    </header>
+
+    <div class="acoes" style="display: flex; justify-content: flex-end; gap: 1rem;">
+       <button id="btnExportarJSON" class="btn-secondary">Exportar .JSON</button>
+       <button id="btnExportarCSV" class="btn-secondary">Exportar .CSV</button>
+    </div>
+
+    <div class="tabela-container">
+      <table class="tabela-dados"> <thead>
+          <tr>
+            <th>Aluno</th>
+            <th>Disciplina</th>
+            <th>Nota P1</th>
+            <th>Nota P2</th>
+            <th>Nota P3</th>
+            <th>Nota Calculada</th>
+            <th>Nota Final (Ajustada)</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="corpo-tabela-notas">
+          <tr class="sem-dados">
+            <td colspan="8" style="text-align: center;">Carregando notas...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <script src="/notas/notas.js"></script>
 </body>
 </html>
