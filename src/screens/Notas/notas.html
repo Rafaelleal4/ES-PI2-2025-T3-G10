@@ -1,48 +1,139 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gerenciar Notas - NotaDez</title>
-  
-  <link rel="stylesheet" href="/cursos/cursos.css" />
-  
-  </head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciar Componentes de Nota - NotaDez</title>
+  <link rel="stylesheet" href="/notas/notas.css">
+</head>
 <body>
 
   <div class="container">
     <header>
-      <h1>Gerenciar Notas</h1>
+      <h1>Gerenciar Componentes de Nota</h1>
       <div>
         <button id="btnDashboard" class="btn-secondary">Dashboard</button>
         <button id="btnSair" class="btn-secondary">Sair</button>
       </div>
     </header>
 
-    <div class="acoes" style="display: flex; justify-content: flex-end; gap: 1rem;">
-       <button id="btnExportarJSON" class="btn-secondary">Exportar .JSON</button>
-       <button id="btnExportarCSV" class="btn-secondary">Exportar .CSV</button>
+    <!-- FILTRO DE DISCIPLINA -->
+    <div class="filtros" style="padding: 1.5rem 2rem; border-bottom: 1px solid #e2e8f0;">
+      <div class="form-group">
+        <label for="selectDisciplinaFiltro">Selecione a disciplina:</label>
+        <select id="selectDisciplinaFiltro" required>
+          <option value="">Selecione...</option>
+        </select>
+      </div>
     </div>
 
+    <!-- BOTÃO NOVO COMPONENTE -->
+    <div class="acoes">
+      <button id="btnNovoComponente" class="btn-primary">
+        <span style="font-size: 1.2rem;">+</span> Novo Componente
+      </button>
+    </div>
+
+    <!-- TABELA -->
     <div class="tabela-container">
-      <table class="tabela-dados"> <thead>
+      <table id="tabelaComponentes">
+        <thead>
           <tr>
-            <th>Aluno</th>
+            <th>Nome</th>
+            <th>Sigla</th>
+            <th>Descrição</th>
+            <th>Peso</th>
             <th>Disciplina</th>
-            <th>Nota P1</th>
-            <th>Nota P2</th>
-            <th>Nota P3</th>
-            <th>Nota Calculada</th>
-            <th>Nota Final (Ajustada)</th>
             <th>Ações</th>
           </tr>
         </thead>
-        <tbody id="corpo-tabela-notas">
+        <tbody id="listaComponentes">
           <tr class="sem-dados">
-            <td colspan="8" style="text-align: center;">Carregando notas...</td>
+            <td colspan="6">Selecione uma disciplina para ver os componentes</td>
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+
+  <!-- MODAL DE CRIAÇÃO/EDIÇÃO -->
+  <div id="modalComponente" class="modal">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h2 id="modalTitulo">Novo Componente de Nota</h2>
+        <span class="close">&times;</span>
+      </div>
+
+      <form id="formComponente">
+        <input type="hidden" id="componenteId">
+
+        <div class="form-group">
+          <label for="inputNome">Nome:</label>
+          <input type="text" id="inputNome" placeholder="Ex: Prova 1" required>
+        </div>
+
+        <div class="form-group">
+          <label for="inputSigla">Sigla:</label>
+          <input type="text" id="inputSigla" placeholder="Ex: P1" required>
+        </div>
+
+        <div class="form-group">
+          <label for="inputDescricao">Descrição:</label>
+          <textarea id="inputDescricao" placeholder="Ex: Avaliação teórica do módulo 1"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="inputPeso">Peso (0 a 1):</label>
+          <input
+            type="number"
+            id="inputPeso"
+            step="0.1"
+            min="0"
+            max="1"
+            placeholder="Ex: 0.4"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="inputDisciplina">Disciplina:</label>
+          <select id="inputDisciplina" required>
+            <option value="">Selecione...</option>
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="btnCancelar">Cancelar</button>
+          <button type="submit" class="btn-primary">Salvar</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+
+  <!-- MODAL DE CONFIRMAÇÃO DE EXCLUSÃO -->
+  <div id="modalConfirmacao" class="modal">
+    <div class="modal-content modal-small">
+
+      <div class="modal-header">
+        <h2>Confirmar Exclusão</h2>
+        <span class="close">&times;</span>
+      </div>
+
+      <div class="modal-body">
+        <p>Tem certeza que deseja excluir o componente:</p>
+        <p><strong id="componenteNomeExcluir"></strong></p>
+        <p class="aviso">Esta ação não pode ser desfeita.</p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" id="btnCancelarExclusao">Cancelar</button>
+        <button type="button" class="btn-danger" id="btnConfirmarExclusao">Excluir</button>
+      </div>
+
     </div>
   </div>
 
