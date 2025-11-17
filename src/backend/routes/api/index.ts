@@ -9,6 +9,8 @@ import cursosRoutes from './cursos';
 import disciplinasRoutes from './disciplinas';
 import turmasRoutes from './turmas';
 import alunosRoutes from './alunos';
+import notasRoutes from './notas';
+import componenteNotasRoutes from './componentes-notas';
 
 export function registerApiRoutes(app: Express): void {
   // Rotas de autenticação
@@ -28,4 +30,10 @@ export function registerApiRoutes(app: Express): void {
 
   // Rotas de alunos
   app.use('/api/alunos', alunosRoutes);
+
+  // Rotas de notas
+  app.use('/api/notas', notasRoutes);
+
+  // Rotas de componentes de nota
+  app.use('/api/componentes-nota', componenteNotasRoutes);
 }
