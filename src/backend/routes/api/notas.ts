@@ -15,8 +15,9 @@ router.post("/", async (req: Request, res: Response) => {
     const alunoId = Number(aluno_id);
     const componenteId = Number(componente_id);
     const valorNum = Number(valor);
+    const atualizadoPorId = Number(atualizado_por);
 
-    if (isNaN(turmaId) || isNaN(alunoId) || isNaN(componenteId) || !atualizado_por) {
+    if (isNaN(turmaId) || isNaN(alunoId) || isNaN(componenteId) || isNaN(atualizadoPorId)) {
       return res.status(400).json({
         sucesso: false,
         mensagem: "turma_id, aluno_id, componente_id e atualizado_por são obrigatórios."
@@ -30,23 +31,27 @@ router.post("/", async (req: Request, res: Response) => {
       });
     }
 
+    // Verifica se a nota já existe
     const existe = await executeQuery(
-      `SELECT id 
+      `SELECT id
          FROM notas
         WHERE aluno_id = :aluno_id
-          AND componente_id = :componente_id`,
-      { aluno_id: alunoId, componente_id: componenteId }
+          AND componente_id = :componente_id
+          AND turma_id = :turma_id`,
+      { aluno_id: alunoId, componente_id: componenteId, turma_id: turmaId }
     );
 
     if (existe.rows?.length) {
+      // Atualiza nota existente
       await executeQuery(
         `UPDATE notas
             SET valor = :valor,
                 atualizado_por = :atualizado_por,
                 atualizado_em = SYSTIMESTAMP
           WHERE aluno_id = :aluno_id
-            AND componente_id = :componente_id`,
-        { valor: valorNum, atualizado_por, aluno_id: alunoId, componente_id: componenteId }
+            AND componente_id = :componente_id
+            AND turma_id = :turma_id`,
+        { valor: valorNum, atualizado_por: atualizadoPorId, aluno_id: alunoId, componente_id: componenteId, turma_id: turmaId }
       );
 
       return res.json({
@@ -55,10 +60,11 @@ router.post("/", async (req: Request, res: Response) => {
       });
     }
 
+    // Insere nova nota
     await executeQuery(
       `INSERT INTO notas (turma_id, aluno_id, componente_id, valor, atualizado_por)
        VALUES (:turma_id, :aluno_id, :componente_id, :valor, :atualizado_por)`,
-      { turma_id: turmaId, aluno_id: alunoId, componente_id: componenteId, valor: valorNum, atualizado_por }
+      { turma_id: turmaId, aluno_id: alunoId, componente_id: componenteId, valor: valorNum, atualizado_por: atualizadoPorId }
     );
 
     return res.status(201).json({
@@ -76,9 +82,9 @@ router.post("/", async (req: Request, res: Response) => {
   }
 });
 
-
 /**
  * GET /api/notas?turma_id=1
+ * Lista notas de uma turma
  */
 router.get("/", async (req: Request, res: Response) => {
   try {
@@ -88,7 +94,7 @@ router.get("/", async (req: Request, res: Response) => {
     if (isNaN(turmaId)) {
       return res.status(400).json({
         sucesso: false,
-        mensagem: "turma_id é obrigatório"
+        mensagem: "turma_id é obrigatório."
       });
     }
 
@@ -102,13 +108,13 @@ router.get("/", async (req: Request, res: Response) => {
          JOIN alunos a ON a.id = n.aluno_id
          JOIN componentes_nota c ON c.id = n.componente_id
         WHERE n.turma_id = :turma_id
-        ORDER BY aluno`,
+        ORDER BY a.nome`,
       { turma_id: turmaId }
     );
 
     return res.json({
       sucesso: true,
-      dados: resultado.rows
+      dados: resultado.rows || []
     });
 
   } catch (error: any) {

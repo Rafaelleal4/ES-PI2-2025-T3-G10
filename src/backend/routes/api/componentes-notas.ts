@@ -14,7 +14,7 @@ const router = Router();
  */
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { nome, sigla, descricao, id_disciplina, peso } = req.body;
+    const { nome, sigla, disciplina_id } = req.body;
 
     if (!nome || !nome.trim()) {
       return res.status(400).json({
@@ -30,23 +30,16 @@ router.post('/', async (req: Request, res: Response) => {
       });
     }
 
-    if (!id_disciplina) {
+    if (!disciplina_id) {
       return res.status(400).json({
         sucesso: false,
         mensagem: 'O ID da disciplina é obrigatório'
       });
     }
 
-    if (peso < 0 || peso > 1) {
-      return res.status(400).json({
-        sucesso: false,
-        mensagem: 'O peso do componente deve estar entre 0 e 1 (exemplo: 0.2 para 20%)'
-      });
-    }
-
     const disciplinaExiste = await executeQuery(
       'SELECT id FROM disciplinas WHERE id = :id',
-      { id: id_disciplina }
+      { id: disciplina_id }
     );
 
     if (!disciplinaExiste.rows || disciplinaExiste.rows.length === 0) {
@@ -57,18 +50,18 @@ router.post('/', async (req: Request, res: Response) => {
     }
 
     await executeQuery(
-      `INSERT INTO componentes_nota (nome, sigla, descricao, id_disciplina, peso)
-       VALUES (:nome, :sigla, :descricao, :id_disciplina, :peso)`,
-      { nome: nome.trim(), sigla: sigla.trim(), descricao, id_disciplina, peso }
+      `INSERT INTO componentes_nota (nome, sigla, disciplina_id)
+       VALUES (:nome, :sigla, :disciplina_id)`,
+      { nome: nome.trim(), sigla: sigla.trim(), disciplina_id }
     );
 
     const componenteCriado = await executeQuery(
-        `SELECT id, nome, sigla, descricao, id_disciplina, peso
-         FROM componentes_nota
-       WHERE id_disciplina = :id_disciplina
+      `SELECT id, nome, sigla, disciplina_id
+       FROM componentes_nota
+       WHERE disciplina_id = :disciplina_id
        ORDER BY id DESC
        FETCH FIRST 1 ROWS ONLY`,
-      { id_disciplina }
+      { disciplina_id }
     );
 
     return res.status(201).json({
@@ -90,22 +83,22 @@ router.post('/', async (req: Request, res: Response) => {
 /**
  * GET /api/componentes-nota
  * Lista componentes
- * Opcional: ?id_disciplina=X
+ * Opcional: ?disciplina_id=X
  */
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const { id_disciplina } = req.query;
+    const { disciplina_id } = req.query;
 
     let query = `
-      SELECT id, nome, sigla, descricao, id_disciplina, peso
-      FROM componente_nota
+      SELECT id, nome, sigla, disciplina_id
+      FROM componentes_nota
     `;
 
-    if (id_disciplina) {
-      query += ` WHERE id_disciplina = :id_disciplina ORDER BY id DESC`;
+    if (disciplina_id) {
+      query += ` WHERE disciplina_id = :disciplina_id ORDER BY id DESC`;
 
       const resultado = await executeQuery(query, {
-        id_disciplina: Number(id_disciplina)
+        disciplina_id: Number(disciplina_id)
       });
 
       return res.status(200).json({
@@ -141,8 +134,8 @@ router.get('/:id', async (req: Request, res: Response) => {
     const { id } = req.params;
 
     const resultado = await executeQuery(
-        `SELECT id, nome, sigla, descricao, id_disciplina, peso
-         FROM componentes_nota
+      `SELECT id, nome, sigla, disciplina_id
+       FROM componentes_nota
        WHERE id = :id`,
       { id: Number(id) }
     );
@@ -175,19 +168,12 @@ router.get('/:id', async (req: Request, res: Response) => {
 router.put('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { nome, sigla, descricao, id_disciplina, peso } = req.body;
+    const { nome, sigla, disciplina_id } = req.body;
 
-    if (!nome || !sigla || !id_disciplina) {
+    if (!nome || !sigla || !disciplina_id) {
       return res.status(400).json({
         sucesso: false,
         mensagem: 'Nome, sigla e ID da disciplina são obrigatórios'
-      });
-    }
-
-    if (peso < 0 || peso > 1) {
-      return res.status(400).json({
-        sucesso: false,
-        mensagem: 'O peso deve estar entre 0 e 1'
       });
     }
 
@@ -204,19 +190,17 @@ router.put('/:id', async (req: Request, res: Response) => {
     }
 
     await executeQuery(
-        `UPDATE componentes_nota
+      `UPDATE componentes_nota
        SET nome = :nome,
            sigla = :sigla,
-           descricao = :descricao,
-           id_disciplina = :id_disciplina,
-           peso = :peso
+           disciplina_id = :disciplina_id
        WHERE id = :id`,
-      { nome, sigla, descricao, id_disciplina, peso, id: Number(id) }
+      { nome, sigla, disciplina_id, id: Number(id) }
     );
 
     const atualizado = await executeQuery(
-      `SELECT id, nome, sigla, descricao, id_disciplina, peso
-       FROM componente_nota
+      `SELECT id, nome, sigla, disciplina_id
+       FROM componentes_nota
        WHERE id = :id`,
       { id: Number(id) }
     );
