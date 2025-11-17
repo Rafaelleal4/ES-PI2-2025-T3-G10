@@ -46,7 +46,7 @@ router.post('/', async (req: Request, res: Response) => {
 
     const disciplinaExiste = await executeQuery(
       'SELECT id FROM disciplinas WHERE id = :id',
-      [id_disciplina]
+      { id: id_disciplina }
     );
 
     if (!disciplinaExiste.rows || disciplinaExiste.rows.length === 0) {
@@ -57,18 +57,18 @@ router.post('/', async (req: Request, res: Response) => {
     }
 
     await executeQuery(
-      `INSERT INTO componente_nota (nome, sigla, descricao, id_disciplina, peso)
+      `INSERT INTO componentes_nota (nome, sigla, descricao, id_disciplina, peso)
        VALUES (:nome, :sigla, :descricao, :id_disciplina, :peso)`,
       { nome: nome.trim(), sigla: sigla.trim(), descricao, id_disciplina, peso }
     );
 
     const componenteCriado = await executeQuery(
-      `SELECT id, nome, sigla, descricao, id_disciplina, peso
-       FROM componente_nota
+        `SELECT id, nome, sigla, descricao, id_disciplina, peso
+         FROM componentes_nota
        WHERE id_disciplina = :id_disciplina
        ORDER BY id DESC
        FETCH FIRST 1 ROWS ONLY`,
-      [id_disciplina]
+      { id_disciplina }
     );
 
     return res.status(201).json({
@@ -101,11 +101,12 @@ router.get('/', async (req: Request, res: Response) => {
       FROM componente_nota
     `;
 
-    // Se veio disciplina, filtra
     if (id_disciplina) {
       query += ` WHERE id_disciplina = :id_disciplina ORDER BY id DESC`;
 
-      const resultado = await executeQuery(query, [Number(id_disciplina)]);
+      const resultado = await executeQuery(query, {
+        id_disciplina: Number(id_disciplina)
+      });
 
       return res.status(200).json({
         sucesso: true,
@@ -113,10 +114,9 @@ router.get('/', async (req: Request, res: Response) => {
       });
     }
 
-    // Se não veio → lista tudo
     query += ` ORDER BY id DESC`;
 
-    const resultadoTodos = await executeQuery(query, []);
+    const resultadoTodos = await executeQuery(query, {});
 
     return res.status(200).json({
       sucesso: true,
@@ -141,10 +141,10 @@ router.get('/:id', async (req: Request, res: Response) => {
     const { id } = req.params;
 
     const resultado = await executeQuery(
-      `SELECT id, nome, sigla, descricao, id_disciplina, peso
-       FROM componente_nota
+        `SELECT id, nome, sigla, descricao, id_disciplina, peso
+         FROM componentes_nota
        WHERE id = :id`,
-      [Number(id)]
+      { id: Number(id) }
     );
 
     if (!resultado.rows || resultado.rows.length === 0) {
@@ -192,8 +192,8 @@ router.put('/:id', async (req: Request, res: Response) => {
     }
 
     const existe = await executeQuery(
-      'SELECT id FROM componente_nota WHERE id = :id',
-      [Number(id)]
+      'SELECT id FROM componentes_nota WHERE id = :id',
+      { id: Number(id) }
     );
 
     if (!existe.rows || existe.rows.length === 0) {
@@ -204,7 +204,7 @@ router.put('/:id', async (req: Request, res: Response) => {
     }
 
     await executeQuery(
-      `UPDATE componente_nota
+        `UPDATE componentes_nota
        SET nome = :nome,
            sigla = :sigla,
            descricao = :descricao,
@@ -218,7 +218,7 @@ router.put('/:id', async (req: Request, res: Response) => {
       `SELECT id, nome, sigla, descricao, id_disciplina, peso
        FROM componente_nota
        WHERE id = :id`,
-      [Number(id)]
+      { id: Number(id) }
     );
 
     return res.status(200).json({
@@ -245,8 +245,8 @@ router.delete('/:id', async (req: Request, res: Response) => {
     const { id } = req.params;
 
     const existe = await executeQuery(
-      'SELECT id FROM componente_nota WHERE id = :id',
-      [Number(id)]
+      'SELECT id FROM componentes_nota WHERE id = :id',
+      { id: Number(id) }
     );
 
     if (!existe.rows || existe.rows.length === 0) {
@@ -257,8 +257,8 @@ router.delete('/:id', async (req: Request, res: Response) => {
     }
 
     await executeQuery(
-      'DELETE FROM componente_nota WHERE id = :id',
-      [Number(id)]
+      'DELETE FROM componentes_nota WHERE id = :id',
+      { id: Number(id) }
     );
 
     return res.status(200).json({

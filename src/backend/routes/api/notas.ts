@@ -1,118 +1,121 @@
-/**
- * CRUD de Componentes de Nota
- * Autor: Kayo Gabriel
- */
-3
-import { Router, Request, Response } from 'express';
-import { executeQuery } from '../../database/connection';
+import { Router, Request, Response } from "express";
+import { executeQuery } from "../../database/connection";
 
 const router = Router();
 
 /**
  * POST /api/notas
- * Cria ou atualiza uma nota de um aluno em um componente
+ * Cria ou atualiza uma nota
  */
-router.post('/', async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
   try {
-    const { aluno_id, componente_id, nota } = req.body;
+    const { turma_id, aluno_id, componente_id, valor, atualizado_por } = req.body;
 
-    // Validações
-    if (!aluno_id || !componente_id) {
+    const turmaId = Number(turma_id);
+    const alunoId = Number(aluno_id);
+    const componenteId = Number(componente_id);
+    const valorNum = Number(valor);
+
+    if (isNaN(turmaId) || isNaN(alunoId) || isNaN(componenteId) || !atualizado_por) {
       return res.status(400).json({
         sucesso: false,
-        mensagem: 'Aluno e componente são obrigatórios'
+        mensagem: "turma_id, aluno_id, componente_id e atualizado_por são obrigatórios."
       });
     }
 
-    if (nota < 0 || nota > 10) {
+    if (isNaN(valorNum) || valorNum < 0 || valorNum > 10) {
       return res.status(400).json({
         sucesso: false,
-        mensagem: 'A nota deve estar entre 0 e 10'
+        mensagem: "O valor da nota deve ser um número entre 0 e 10."
       });
     }
 
-    // Verifica se a nota já existe
-    const notaExistente = await executeQuery(
-      `SELECT id FROM notas WHERE aluno_id = :aluno_id AND componente_id = :componente_id`,
-      [aluno_id, componente_id]
+    const existe = await executeQuery(
+      `SELECT id 
+         FROM notas
+        WHERE aluno_id = :aluno_id
+          AND componente_id = :componente_id`,
+      { aluno_id: alunoId, componente_id: componenteId }
     );
 
-    if (notaExistente.rows && notaExistente.rows.length > 0) {
-      // Atualiza nota existente
+    if (existe.rows?.length) {
       await executeQuery(
-        `UPDATE notas 
-         SET nota = :nota, atualizado_em = CURRENT_TIMESTAMP 
-         WHERE aluno_id = :aluno_id AND componente_id = :componente_id`,
-        { nota, aluno_id, componente_id }
+        `UPDATE notas
+            SET valor = :valor,
+                atualizado_por = :atualizado_por,
+                atualizado_em = SYSTIMESTAMP
+          WHERE aluno_id = :aluno_id
+            AND componente_id = :componente_id`,
+        { valor: valorNum, atualizado_por, aluno_id: alunoId, componente_id: componenteId }
       );
 
-      return res.status(200).json({
+      return res.json({
         sucesso: true,
-        mensagem: 'Nota atualizada com sucesso'
-      });
-    } else {
-      // Insere nova nota
-      await executeQuery(
-        `INSERT INTO notas (aluno_id, componente_id, nota) 
-         VALUES (:aluno_id, :componente_id, :nota)`,
-        { aluno_id, componente_id, nota }
-      );
-
-      return res.status(201).json({
-        sucesso: true,
-        mensagem: 'Nota registrada com sucesso'
+        mensagem: "Nota atualizada com sucesso."
       });
     }
 
+    await executeQuery(
+      `INSERT INTO notas (turma_id, aluno_id, componente_id, valor, atualizado_por)
+       VALUES (:turma_id, :aluno_id, :componente_id, :valor, :atualizado_por)`,
+      { turma_id: turmaId, aluno_id: alunoId, componente_id: componenteId, valor: valorNum, atualizado_por }
+    );
+
+    return res.status(201).json({
+      sucesso: true,
+      mensagem: "Nota cadastrada com sucesso."
+    });
+
   } catch (error: any) {
-    console.error('Erro ao salvar nota:', error);
+    console.error("Erro ao cadastrar nota:", error);
     return res.status(500).json({
       sucesso: false,
-      mensagem: 'Erro ao salvar nota',
+      mensagem: "Erro ao cadastrar nota.",
       erro: error.message
     });
   }
 });
 
+
 /**
  * GET /api/notas?turma_id=1
- * Lista notas de todos os alunos de uma turma
  */
-router.get('/', async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
   try {
     const { turma_id } = req.query;
 
-    if (!turma_id) {
+    const turmaId = Number(turma_id);
+    if (isNaN(turmaId)) {
       return res.status(400).json({
         sucesso: false,
-        mensagem: 'ID da turma é obrigatório'
+        mensagem: "turma_id é obrigatório"
       });
     }
 
     const resultado = await executeQuery(
-      `SELECT a.id AS aluno_id, a.nome AS aluno_nome, 
-              c.id AS componente_id, c.nome AS componente_nome,
-              n.nota
-       FROM alunos a
-       JOIN turmas t ON t.id = a.turma_id
-       JOIN disciplinas d ON d.id = t.disciplina_id
-       JOIN componente_nota c ON c.id_disciplina = d.id
-       LEFT JOIN notas n ON n.aluno_id = a.id AND n.componente_id = c.id
-       WHERE t.id = :turma_id
-       ORDER BY a.nome`,
-      [turma_id]
+      `SELECT n.id,
+              a.nome AS aluno,
+              c.nome AS componente,
+              n.valor,
+              n.atualizado_em
+         FROM notas n
+         JOIN alunos a ON a.id = n.aluno_id
+         JOIN componentes_nota c ON c.id = n.componente_id
+        WHERE n.turma_id = :turma_id
+        ORDER BY aluno`,
+      { turma_id: turmaId }
     );
 
-    return res.status(200).json({
+    return res.json({
       sucesso: true,
       dados: resultado.rows
     });
 
   } catch (error: any) {
-    console.error('Erro ao listar notas:', error);
+    console.error("Erro ao listar notas:", error);
     return res.status(500).json({
       sucesso: false,
-      mensagem: 'Erro ao listar notas',
+      mensagem: "Erro ao listar notas.",
       erro: error.message
     });
   }

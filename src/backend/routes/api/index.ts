@@ -6,7 +6,7 @@ import disciplinasRoutes from './disciplinas';
 import turmasRoutes from './turmas';
 import alunosRoutes from './alunos';
 import notasRoutes from './notas';
-import componenteNotasRoutes from './componente-notas';
+import componenteNotasRoutes from './componentes-notas';
 
 export function registerApiRoutes(app: Express): void {
   // Rotas de autenticação
