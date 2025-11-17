@@ -1,3 +1,8 @@
+/**
+ * CRUD de Componentes de Nota
+ * Autor: Kayo Gabriel
+ */
+3
 import { Router, Request, Response } from 'express';
 import { executeQuery } from '../../database/connection';
 

@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gerenciar Componentes de Nota - Sistema de Notas</title>
+  <title>Gerenciar Componentes de Nota - NotaDez</title>
   <link rel="stylesheet" href="/notas/notas.css">
 </head>
 <body>
+
   <div class="container">
     <header>
       <h1>Gerenciar Componentes de Nota</h1>
@@ -16,12 +17,24 @@
       </div>
     </header>
 
+    <!-- FILTRO DE DISCIPLINA -->
+    <div class="filtros" style="padding: 1.5rem 2rem; border-bottom: 1px solid #e2e8f0;">
+      <div class="form-group">
+        <label for="selectDisciplinaFiltro">Selecione a disciplina:</label>
+        <select id="selectDisciplinaFiltro" required>
+          <option value="">Selecione...</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- BOTÃO NOVO COMPONENTE -->
     <div class="acoes">
       <button id="btnNovoComponente" class="btn-primary">
-        <span>+</span> Novo Componente
+        <span style="font-size: 1.2rem;">+</span> Novo Componente
       </button>
     </div>
 
+    <!-- TABELA -->
     <div class="tabela-container">
       <table id="tabelaComponentes">
         <thead>
@@ -36,20 +49,23 @@
         </thead>
         <tbody id="listaComponentes">
           <tr class="sem-dados">
-            <td colspan="6">Carregando...</td>
+            <td colspan="6">Selecione uma disciplina para ver os componentes</td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- Criar/editar componente -->
+
+  <!-- MODAL DE CRIAÇÃO/EDIÇÃO -->
   <div id="modalComponente" class="modal">
     <div class="modal-content">
+
       <div class="modal-header">
         <h2 id="modalTitulo">Novo Componente de Nota</h2>
         <span class="close">&times;</span>
       </div>
+
       <form id="formComponente">
         <input type="hidden" id="componenteId">
 
@@ -70,12 +86,22 @@
 
         <div class="form-group">
           <label for="inputPeso">Peso (0 a 1):</label>
-          <input type="number" id="inputPeso" step="0.1" min="0" max="1" placeholder="Ex: 0.4" required>
+          <input
+            type="number"
+            id="inputPeso"
+            step="0.1"
+            min="0"
+            max="1"
+            placeholder="Ex: 0.4"
+            required
+          >
         </div>
 
         <div class="form-group">
-          <label for="inputDisciplina">ID da Disciplina:</label>
-          <input type="number" id="inputDisciplina" placeholder="Ex: 101" required>
+          <label for="inputDisciplina">Disciplina:</label>
+          <select id="inputDisciplina" required>
+            <option value="">Selecione...</option>
+          </select>
         </div>
 
         <div class="modal-footer">
@@ -83,24 +109,31 @@
           <button type="submit" class="btn-primary">Salvar</button>
         </div>
       </form>
+
     </div>
   </div>
 
-  <!-- Confirmação de exclusão -->
+
+  <!-- MODAL DE CONFIRMAÇÃO DE EXCLUSÃO -->
   <div id="modalConfirmacao" class="modal">
     <div class="modal-content modal-small">
+
       <div class="modal-header">
         <h2>Confirmar Exclusão</h2>
         <span class="close">&times;</span>
       </div>
+
       <div class="modal-body">
-        <p>Tem certeza que deseja excluir o componente <strong id="componenteNomeExcluir"></strong>?</p>
-        <p class="aviso">Esta ação não poderá ser desfeita.</p>
+        <p>Tem certeza que deseja excluir o componente:</p>
+        <p><strong id="componenteNomeExcluir"></strong></p>
+        <p class="aviso">Esta ação não pode ser desfeita.</p>
       </div>
+
       <div class="modal-footer">
         <button type="button" class="btn-secondary" id="btnCancelarExclusao">Cancelar</button>
         <button type="button" class="btn-danger" id="btnConfirmarExclusao">Excluir</button>
       </div>
+
     </div>
   </div>
 

@@ -1,3 +1,8 @@
+/**
+ * CRUD de Componentes de Nota
+ * Autor: Kayo Gabriel
+ */
+
 import { Router, Request, Response } from 'express';
 import { executeQuery } from '../../database/connection';
 
@@ -11,7 +16,6 @@ router.post('/', async (req: Request, res: Response) => {
   try {
     const { nome, sigla, descricao, id_disciplina, peso } = req.body;
 
-    // Validações
     if (!nome || !nome.trim()) {
       return res.status(400).json({
         sucesso: false,
@@ -39,7 +43,7 @@ router.post('/', async (req: Request, res: Response) => {
         mensagem: 'O peso do componente deve estar entre 0 e 1 (exemplo: 0.2 para 20%)'
       });
     }
-    // Verificar se a disciplina existe
+
     const disciplinaExiste = await executeQuery(
       'SELECT id FROM disciplinas WHERE id = :id',
       [id_disciplina]
@@ -52,16 +56,14 @@ router.post('/', async (req: Request, res: Response) => {
       });
     }
 
-    // Inserir componente
     await executeQuery(
-      `INSERT INTO componente_nota (nome, sigla, descricao, id_disciplina)
-       VALUES (:nome, :sigla, :descricao, :id_disciplina)`,
-      { nome: nome.trim(), sigla: sigla.trim(), descricao, id_disciplina }
+      `INSERT INTO componente_nota (nome, sigla, descricao, id_disciplina, peso)
+       VALUES (:nome, :sigla, :descricao, :id_disciplina, :peso)`,
+      { nome: nome.trim(), sigla: sigla.trim(), descricao, id_disciplina, peso }
     );
 
-    // Buscar o último componente criado
     const componenteCriado = await executeQuery(
-      `SELECT id, nome, sigla, descricao, id_disciplina
+      `SELECT id, nome, sigla, descricao, id_disciplina, peso
        FROM componente_nota
        WHERE id_disciplina = :id_disciplina
        ORDER BY id DESC
@@ -87,31 +89,38 @@ router.post('/', async (req: Request, res: Response) => {
 
 /**
  * GET /api/componentes-nota
- * Lista todos os componentes de nota de uma disciplina
- * Query params: ?id_disciplina=X
+ * Lista componentes
+ * Opcional: ?id_disciplina=X
  */
 router.get('/', async (req: Request, res: Response) => {
   try {
     const { id_disciplina } = req.query;
 
-    if (!id_disciplina) {
-      return res.status(400).json({
-        sucesso: false,
-        mensagem: 'ID da disciplina é obrigatório'
+    let query = `
+      SELECT id, nome, sigla, descricao, id_disciplina, peso
+      FROM componente_nota
+    `;
+
+    // Se veio disciplina, filtra
+    if (id_disciplina) {
+      query += ` WHERE id_disciplina = :id_disciplina ORDER BY id DESC`;
+
+      const resultado = await executeQuery(query, [Number(id_disciplina)]);
+
+      return res.status(200).json({
+        sucesso: true,
+        dados: resultado.rows || []
       });
     }
 
-    const resultado = await executeQuery(
-      `SELECT id, nome, sigla, descricao, id_disciplina
-       FROM componente_nota
-       WHERE id_disciplina = :id_disciplina
-       ORDER BY id DESC`,
-      [Number(id_disciplina)]
-    );
+    // Se não veio → lista tudo
+    query += ` ORDER BY id DESC`;
+
+    const resultadoTodos = await executeQuery(query, []);
 
     return res.status(200).json({
       sucesso: true,
-      dados: resultado.rows || []
+      dados: resultadoTodos.rows || []
     });
 
   } catch (error: any) {
@@ -126,14 +135,13 @@ router.get('/', async (req: Request, res: Response) => {
 
 /**
  * GET /api/componentes-nota/:id
- * Busca um componente específico
  */
 router.get('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
     const resultado = await executeQuery(
-      `SELECT id, nome, sigla, descricao, id_disciplina
+      `SELECT id, nome, sigla, descricao, id_disciplina, peso
        FROM componente_nota
        WHERE id = :id`,
       [Number(id)]
@@ -163,7 +171,6 @@ router.get('/:id', async (req: Request, res: Response) => {
 
 /**
  * PUT /api/componentes-nota/:id
- * Atualiza um componente existente
  */
 router.put('/:id', async (req: Request, res: Response) => {
   try {
@@ -180,11 +187,10 @@ router.put('/:id', async (req: Request, res: Response) => {
     if (peso < 0 || peso > 1) {
       return res.status(400).json({
         sucesso: false,
-        mensagem: 'O peso do componente deve estar entre 0 e 1 (exemplo: 0.2 para 20%)'
+        mensagem: 'O peso deve estar entre 0 e 1'
       });
     }
 
-    // Verifica se existe
     const existe = await executeQuery(
       'SELECT id FROM componente_nota WHERE id = :id',
       [Number(id)]
@@ -197,16 +203,21 @@ router.put('/:id', async (req: Request, res: Response) => {
       });
     }
 
-    // Atualiza
     await executeQuery(
       `UPDATE componente_nota
-       SET nome = :nome, sigla = :sigla, descricao = :descricao, id_disciplina = :id_disciplina, peso = :peso
+       SET nome = :nome,
+           sigla = :sigla,
+           descricao = :descricao,
+           id_disciplina = :id_disciplina,
+           peso = :peso
        WHERE id = :id`,
       { nome, sigla, descricao, id_disciplina, peso, id: Number(id) }
     );
 
     const atualizado = await executeQuery(
-      'SELECT id, nome, sigla, descricao, id_disciplina FROM componente_nota WHERE id = :id',
+      `SELECT id, nome, sigla, descricao, id_disciplina, peso
+       FROM componente_nota
+       WHERE id = :id`,
       [Number(id)]
     );
 
@@ -220,7 +231,7 @@ router.put('/:id', async (req: Request, res: Response) => {
     console.error('Erro ao atualizar componente:', error);
     return res.status(500).json({
       sucesso: false,
-      mensagem: 'Erro ao atualizar componente de nota',
+      mensagem: 'Erro ao atualizar componente',
       erro: error.message
     });
   }
@@ -228,13 +239,11 @@ router.put('/:id', async (req: Request, res: Response) => {
 
 /**
  * DELETE /api/componentes-nota/:id
- * Exclui um componente
  */
 router.delete('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    // Verificar se existe
     const existe = await executeQuery(
       'SELECT id FROM componente_nota WHERE id = :id',
       [Number(id)]
@@ -247,7 +256,6 @@ router.delete('/:id', async (req: Request, res: Response) => {
       });
     }
 
-    // Excluir
     await executeQuery(
       'DELETE FROM componente_nota WHERE id = :id',
       [Number(id)]
@@ -255,16 +263,17 @@ router.delete('/:id', async (req: Request, res: Response) => {
 
     return res.status(200).json({
       sucesso: true,
-      mensagem: 'Componente de nota excluído com sucesso'
+      mensagem: 'Componente excluído com sucesso'
     });
 
   } catch (error: any) {
     console.error('Erro ao excluir componente:', error);
     return res.status(500).json({
       sucesso: false,
-      mensagem: 'Erro ao excluir componente de nota',
+      mensagem: 'Erro ao excluir componente',
       erro: error.message
     });
   }
 });
+
 export default router;
