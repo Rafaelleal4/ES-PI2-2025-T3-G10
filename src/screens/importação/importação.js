@@ -23,7 +23,7 @@ function getUsuarioId() {
 function configurarEventos() {
     // Botão para voltar ao Dashboard
     document.getElementById('btnDashboard').addEventListener('click', () => {
-        window.location.href = '/';
+        window.location.href = '/dashboard';
     });
 
     // Botão de Sair
