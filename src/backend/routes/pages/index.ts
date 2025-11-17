@@ -10,6 +10,7 @@ import { registerDisciplinasRoutes } from './disciplinas';
 import { registerTurmasRoutes } from './turmas';
 import { registerAlunosRoutes } from './alunos';
 import { registerNotasRoutes } from './notas';
+import { registerImportacaoRoutes } from './importar';
 
 export function registerPageRoutes(app: Express, screensDir: string): void {
   registerLoginRoutes(app, screensDir);
@@ -23,6 +24,7 @@ export function registerPageRoutes(app: Express, screensDir: string): void {
   registerTurmasRoutes(app, screensDir);
   registerAlunosRoutes(app, screensDir);
   registerNotasRoutes(app, screensDir);
+  registerImportacaoRoutes(app, screensDir);
 
   // Rota raiz
   app.get('/', (req, res) => {
