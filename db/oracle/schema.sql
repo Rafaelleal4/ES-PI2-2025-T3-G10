@@ -88,8 +88,10 @@ CREATE TABLE componentes_nota (
   disciplina_id  NUMBER               NOT NULL,
   sigla          VARCHAR2(20)         NOT NULL,
   nome           VARCHAR2(255)        NOT NULL,
+  peso           NUMBER(4,3)          DEFAULT 0 NOT NULL,
   criado_em      TIMESTAMP            DEFAULT SYSTIMESTAMP NOT NULL,
-  CONSTRAINT fk_compn_disciplina FOREIGN KEY (disciplina_id) REFERENCES disciplinas(id)
+  CONSTRAINT fk_compn_disciplina FOREIGN KEY (disciplina_id) REFERENCES disciplinas(id),
+  CONSTRAINT ck_compn_peso CHECK (peso >= 0 AND peso <= 1)
 );
 
 ALTER TABLE componentes_nota ADD CONSTRAINT uk_compn_disc_sigla UNIQUE (disciplina_id, sigla);
